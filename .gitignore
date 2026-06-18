@@ -1,0 +1,24 @@
+node_modules/
+**/node_modules/
+
+# Angular / Node
+chiqistyle/node_modules/
+chiqistyle/dist/
+chiqistyle/.angular/
+*.log
+
+# .NET
+back/**/bin/
+back/**/obj/
+back/**/.vs/
+back/**/publish/
+*.user
+*.suo
+
+# Configuración sensible
+back/**/appsettings.Development.json
+back/**/appsettings.json
+
+# Sistema
+.DS_Store
+Thumbs.db

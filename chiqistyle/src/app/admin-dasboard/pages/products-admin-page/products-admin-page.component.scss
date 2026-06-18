@@ -1,0 +1,89 @@
+/* --------------------------------------------- */
+/* 🔧 ESTILOS MEJORADOS PARA NG-SELECT CON TAILWIND */
+/* --------------------------------------------- */
+
+.ng-select {
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.ng-select .ng-select-container {
+  border: 1px solid #d1d5db !important; /* gray-300 */
+  border-radius: 0.375rem !important;   /* rounded-md */
+  background-color: #fff !important;
+  min-height: 42px !important;
+  display: flex;
+  align-items: center;
+  transition: all 0.15s ease-in-out;
+}
+
+.ng-select .ng-select-container:hover {
+  border-color: #9ca3af !important; /* gray-400 */
+}
+
+.ng-select.ng-select-focused .ng-select-container {
+  border-color: #3b82f6 !important; /* blue-500 */
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important;
+}
+
+/* Centrado del texto y placeholder */
+.ng-select .ng-value-container {
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem !important; /* px-3 */
+  min-height: 42px;
+}
+
+/* Placeholder */
+.ng-select .ng-placeholder {
+  color: #9ca3af !important; /* gray-400 */
+}
+
+/* Texto seleccionado */
+.ng-select .ng-value {
+  color: #111827 !important; /* gray-900 */
+}
+
+/* Dropdown: lista de opciones */
+.ng-dropdown-panel {
+  border: 1px solid #d1d5db !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+  background-color: white !important;
+  margin-top: 2px !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
+}
+
+/* Opción individual */
+.ng-option {
+  padding: 0.5rem 1rem !important;
+  color: #374151 !important; /* gray-700 */
+  transition: background-color 0.1s ease-in-out;
+}
+
+/* Hover y seleccionado */
+.ng-option:hover {
+  background-color: #eff6ff !important; /* blue-50 */
+}
+
+.ng-option-selected {
+  background-color: #dbeafe !important; /* blue-100 */
+  color: #1e3a8a !important; /* blue-900 */
+  font-weight: 500 !important;
+}
+
+/* Input interno del buscador */
+.ng-select .ng-input > input {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 1.25rem !important;
+  line-height: 1.25rem !important;
+  box-shadow: none !important;
+}
+
+/* Asegurar que el dropdown aparezca sobre los demás */
+.ng-dropdown-panel-items {
+  max-height: 240px !important;
+  overflow-y: auto !important;
+}

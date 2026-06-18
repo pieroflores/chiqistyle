@@ -1,0 +1,171 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  <!-- Encabezado -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+    <h2 class="text-3xl font-extrabold text-gray-800">
+      🧺 Productos en Stock
+    </h2>
+
+    <!-- Buscador -->
+    <div class="mt-4 md:mt-0 flex gap-2">
+      <input
+        type="text"
+        placeholder="Buscar por talla"
+        [(ngModel)]="buscarTermino"
+        (input)="filtrarStock()"
+        class="w-72 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-red-500 focus:border-red-500 text-sm"
+      />
+      <button
+        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium shadow-md transition"
+        (click)="filtrarStock()"
+      >
+        🔍 Buscar
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla principal -->
+  <div
+    *ngIf="!cargando"
+    class="overflow-x-auto bg-white rounded-xl shadow-xl border border-gray-200"
+  >
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold">
+        <tr>
+          <th class="px-4 py-3 text-left">Foto</th>
+          <th class="px-4 py-3 text-left">Producto</th>
+          <th class="px-4 py-3 text-left">Código</th>
+          <th class="px-4 py-3 text-left">Color</th>
+          <th class="px-4 py-3 text-left">Talla</th>
+          <th class="px-4 py-3 text-right">Precio Venta</th>
+          <th class="px-4 py-3 text-right">Precio Liquidacion</th>
+          <th class="px-4 py-3 text-right">Stock</th>
+          <th class="px-4 py-3 text-left">Categoria</th>
+          <th class="px-4 py-3 text-left">Fecha Compra</th>
+          <th class="px-4 py-3 text-center">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-gray-100">
+        <tr
+          *ngFor="let item of stockFiltrado"
+          class="hover:bg-red-50 transition"
+        >
+          <td class="px-4 py-3">
+            <img
+              [src]="obtenerRutaFoto(item.fotoProducto)"
+              alt="Foto producto"
+              class="w-24 h-24 object-cover rounded-md border border-gray-300 shadow-sm"
+            />
+          </td>
+          <td class="px-4 py-3 font-semibold text-gray-800">
+            {{ item.nombreProducto }}
+          </td>
+          <td class="px-4 py-3 text-gray-600">{{ item.codigoSubProducto }}</td>
+          <td class="px-4 py-3 text-gray-600">{{ item.color }}</td>
+          <td class="px-4 py-3 text-gray-600">{{ item.talla }}</td>
+          <td class="px-4 py-3 text-right font-semibold text-gray-800">
+            S/. {{ item.precioVenta | number : '1.2-2' }}
+          </td>
+          <td class="px-4 py-3 text-right font-semibold text-gray-800">
+            S/. {{ item.precioVentaLiquidacion | number : '1.2-2' }}
+          </td>
+          <td
+            class="px-4 py-3 text-right font-bold"
+            [ngClass]="{
+              'text-green-600': item.stock > 10,
+              'text-yellow-600': item.stock <= 10 && item.stock > 3,
+              'text-red-600': item.stock <= 3
+            }"
+          >
+            {{ item.stock }}
+          </td>
+          <td class="px-4 py-3 text-gray-600">{{ item.ubicacion }}</td>
+          <td class="px-4 py-3 text-gray-500">
+            {{ item.fechaCompra | date : 'dd/MM/yyyy' }}
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm font-semibold shadow-md transition"
+              (click)="abrirModalDetalle(item)"
+            >
+              👁 Ver
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="stockFiltrado.length === 0" class="text-center py-6 text-gray-500">
+      No se encontraron productos con ese término.
+    </div>
+  </div>
+
+  <!-- Loader -->
+  <div *ngIf="cargando" class="flex justify-center items-center py-20">
+    <div class="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"></div>
+  </div>
+</div>
+
+<!-- 🔹 Modal Detalle Producto -->
+<div
+  *ngIf="productoSeleccionado"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div
+    class="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-8 relative animate-fadeIn"
+  >
+    <button
+      class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-2xl font-bold"
+      (click)="cerrarModalDetalle()"
+    >
+      &times;
+    </button>
+
+    <h2 class="text-2xl font-bold text-gray-800 border-b pb-3 mb-5">
+      👕 Detalle de Producto
+    </h2>
+
+    <div class="flex flex-col items-center">
+      <img
+        [src]="obtenerRutaFoto(productoSeleccionado.fotoProducto)"
+        class="w-48 h-48 object-cover rounded-lg border shadow-md mb-4"
+      />
+      <p class="text-xl font-bold text-gray-800 mb-2">
+        {{ productoSeleccionado.nombreProducto }}
+      </p>
+      <p class="text-gray-600 mb-1">
+        <strong>Código:</strong> {{ productoSeleccionado.codigoSubProducto }}
+      </p>
+      <p class="text-gray-600 mb-1">
+        <strong>Color:</strong> {{ productoSeleccionado.color }}
+      </p>
+      <p class="text-gray-600 mb-1">
+        <strong>Talla:</strong> {{ productoSeleccionado.talla }}
+      </p>
+      <p class="text-gray-800 font-semibold mb-1">
+        💲 Precio Venta: S/. {{ productoSeleccionado.precioVenta | number : '1.2-2' }}
+      </p>
+      <p class="text-gray-800 font-semibold mb-1">
+        💲 Precio Liquidacion: S/. {{ productoSeleccionado.precioVentaLiquidacion | number : '1.2-2' }}
+      </p>
+      <p class="text-gray-800 font-semibold mb-1">
+        📦 Stock Disponible: {{ productoSeleccionado.stock }}
+      </p>
+      <p class="text-gray-600 mt-2 text-sm">
+        🏬 Ubicación: {{ productoSeleccionado.ubicacion }}
+      </p>
+      <p class="text-gray-500 text-sm mt-1">
+        📅 Fecha de Compra: {{ productoSeleccionado.fechaCompra | date : 'dd/MM/yyyy' }}
+      </p>
+    </div>
+
+    <div class="flex justify-end mt-6">
+      <button
+        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-5 py-2 rounded-md transition"
+        (click)="cerrarModalDetalle()"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+
+  <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Tallas</h2>
+
+  <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <div class="mb-4">
+      <input
+  type="text"
+  placeholder="Buscar por nombre o abreviatura..."
+  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+  [(ngModel)]="busqueda"
+  (input)="filtrarTallas()"
+/>
+    </div>
+
+    <div class="overflow-x-auto">
+     <table class="min-w-full table-auto text-sm text-left">
+  <thead class="bg-gray-200">
+    <tr >
+      <th class="px-4 py-2">ID</th>
+      <th class="px-4 py-2">Nombre de la Talla</th>
+      <th class="px-4 py-2">Abreviatura</th>
+      <th class="px-4 py-2 text-center">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let t of tallasFiltradas" class="border-b hover:bg-gray-50">
+      <td class="px-4 py-2">{{ t.idTalla  }}</td>
+      <td class="px-4 py-2">{{ t.nombreTalla  }}</td>
+      <td class="px-4 py-2">{{ t.abreviatura  }}</td>
+      <td class="px-4 py-2 text-center space-x-2">
+        <button (click)="editarTalla(t)" class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-600 transition-colors">
+          Editar
+        </button>
+        <button (click)="eliminarTalla(t.idTalla!)"
+  class="bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600 transition-colors">
+  Eliminar
+</button>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-4">
+    <h3 class="text-xl font-semibold mb-4 text-gray-700">  {{ tallaEnEdicion != null ? 'Actualizar Talla' : 'Agregar Nueva Talla' }}</h3>
+
+    <form [formGroup]="tallaForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <div>
+        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre de la Talla</label>
+        <input type="text" id="nombre" name="nombre"
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        formControlName="NombreTalla">
+      </div>
+
+      <div>
+        <label for="abreviatura" class="block text-sm font-medium text-gray-700">Abreviatura</label>
+        <input type="text" id="abreviatura" name="abreviatura"
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        formControlName="Abreviatura">
+      </div>
+
+      <div>
+        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+          Guardar Talla
+        </button>
+      </div>
+      <div>
+        <button (click)="cancelarEdicion()" type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

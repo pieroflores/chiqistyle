@@ -1,0 +1,137 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+  <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Almacenes</h2>
+
+  <!-- 🔹 Tabla de almacenes -->
+  <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <div class="overflow-x-auto">
+      <table class="min-w-full table-auto text-sm text-left">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Ubicación</th>
+            <th class="px-4 py-2">Sección</th>
+            <th class="px-4 py-2">Columna</th>
+            <th class="px-4 py-2">Nivel</th>
+            <th class="px-4 py-2">Descripción</th>
+            <th class="px-4 py-2 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of almacenes" class="border-b hover:bg-gray-50">
+            <td class="px-4 py-2">{{ a.idAlmacen }}</td>
+            <td class="px-4 py-2">{{ a.nombreUbicacion }}</td>
+            <td class="px-4 py-2">{{ a.seccion }}</td>
+            <td class="px-4 py-2">{{ a.columna }}</td>
+            <td class="px-4 py-2">{{ a.nivel }}</td>
+            <td class="px-4 py-2">{{ a.descripcion }}</td>
+            <td class="px-4 py-2 text-center space-x-2">
+              <button
+                class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-600"
+                (click)="editar(a)"
+              >
+                Editar
+              </button>
+              <button
+                class="bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600"
+                (click)="eliminar(a.idAlmacen!)"
+              >
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+  <h3 class="text-xl font-semibold mb-6 text-gray-800 flex items-center gap-2">
+    <i class="fa-solid fa-warehouse text-blue-600"></i>
+    {{ editando ? 'Editar Almacén' : 'Agregar Nuevo Almacén' }}
+  </h3>
+
+  <form
+    [formGroup]="formAlmacen"
+    (ngSubmit)="guardarAlmacen()"
+    class="grid grid-cols-1 md:grid-cols-2 gap-4"
+  >
+    <!-- Ubicación -->
+    <div class="col-span-2 md:col-span-1">
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Ubicación</label>
+      <select
+        formControlName="idUbicacion"
+        class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      >
+
+          <option [ngValue]="null">Selecciona la Ubicación...</option>
+        <option *ngFor="let u of ubicaciones" [value]="u.idUbicacion">
+          {{ u.nombreUbicacion }}
+        </option>
+      </select>
+    </div>
+  <!-- Columna -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Columna</label>
+      <input
+        type="text"
+        formControlName="columna"
+        placeholder="Ejemplo: A o 1"
+        class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+    <!-- Sección -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Sección</label>
+      <input
+        type="text"
+        formControlName="seccion"
+        placeholder="Ejemplo: A"
+        class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+
+
+
+    <!-- Nivel -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Nivel</label>
+      <input
+        type="number"
+        formControlName="nivel"
+        placeholder="Ejemplo: 2"
+        class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+
+    <!-- Descripción -->
+    <div class="col-span-2">
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Descripción</label>
+      <textarea
+        formControlName="descripcion"
+        rows="2"
+        placeholder="Ejemplo: Estante principal para productos delicados"
+        class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
+      ></textarea>
+    </div>
+
+    <!-- Botones -->
+    <div class="col-span-2 flex justify-end gap-3 mt-2">
+      <button
+        type="submit"
+        class="bg-green-600 text-white px-5 py-2 rounded-md hover:bg-green-700 transition"
+      >
+        {{ editando ? 'Actualizar' : 'Guardar' }}
+      </button>
+
+      <button
+        *ngIf="editando"
+        type="button"
+        (click)="cancelarEdicion()"
+        class="bg-gray-400 text-white px-5 py-2 rounded-md hover:bg-gray-500 transition"
+      >
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>
+</div>

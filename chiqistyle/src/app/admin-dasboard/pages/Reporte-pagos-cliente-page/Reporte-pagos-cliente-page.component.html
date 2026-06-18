@@ -1,0 +1,165 @@
+<div class="p-6 bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen rounded-2xl shadow-sm">
+  <h2 class="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+    💳 Reporte de Pagos por Cliente
+  </h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 bg-white p-4 rounded-lg shadow-md border">
+    <div>
+      <label class="block text-sm font-medium text-gray-600">Cliente</label>
+      <select [(ngModel)]="idCliente" class="w-full border rounded-md px-3 py-2">
+        <option value="0">Todos</option>
+        <option *ngFor="let c of clientes" [value]="c.idCliente">
+          {{ c.nombreCliente }}
+        </option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-600">Fecha Inicio</label>
+      <input type="date" [(ngModel)]="fechaInicio" class="w-full border rounded-md px-3 py-2" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-600">Fecha Fin</label>
+      <input type="date" [(ngModel)]="fechaFin" class="w-full border rounded-md px-3 py-2" />
+    </div>
+  </div>
+
+  <div class="flex justify-between mb-4">
+    <button (click)="obtenerReporte()" class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition">
+      🔍 Buscar
+    </button>
+    <button (click)="exportarExcel()" class="bg-green-600 text-white px-5 py-2 rounded-md hover:bg-green-700 transition">
+      📤 Exportar Excel
+    </button>
+  </div>
+
+  <div class="mt-6 p-5 bg-white rounded-xl shadow-lg border border-gray-200">
+    <h3 class="text-xl font-bold mb-3 text-gray-800">📊 Resumen de Ventas Pagadas</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+      <div class="p-3 bg-blue-50 rounded-lg">
+        <p class="text-sm text-gray-600">Total Venta (S/.)</p>
+        <p class="text-2xl font-bold text-blue-700">S/. {{ totalPagos() | number:'1.2-2' }}</p>
+      </div>
+      <div class="p-3 bg-green-50 rounded-lg">
+        <p class="text-sm text-gray-600">N° de Ventas</p>
+        <p class="text-2xl font-bold text-green-700">{{ pagos.length }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto bg-white shadow-md rounded-lg border mt-5">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-semibold">
+        <tr>
+          <th class="px-4 py-3 text-left">Cliente</th>
+           <th class="px-4 py-3 text-left">Fecha Venta</th>
+          <th class="px-4 py-3 text-center">Id Venta</th>
+          <th class="px-4 py-3 text-right">Total Venta</th>
+          <th class="px-4 py-3 text-center">Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of pagos" class="border-b hover:bg-gray-50 transition">
+          <td class="px-4 py-2">{{ p.nombreCliente }}</td>
+           <td class="px-4 py-2 text-center">{{ p.fechaVenta }}</td>
+          <td class="px-4 py-2 text-center">{{ p.idVenta }}</td>
+          <td class="px-4 py-2 text-right">S/. {{ p.total | number:'1.2-2' }}</td>
+
+          <td class="px-4 py-2 text-center">
+            <button (click)="abrirModalDetalles(p.idVenta)"
+                    class="text-indigo-600 hover:text-indigo-800 font-medium text-xs">
+              Ver Detalle
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div *ngIf="mostrarModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full">
+    <div class="flex justify-between items-center p-5 border-b bg-indigo-50">
+      <h3 class="text-xl font-bold text-gray-800">Detalle Completo de Venta #{{ ventaActualId }}</h3>
+      <button (click)="cerrarModal()" class="text-gray-600 hover:text-gray-900">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <div class="p-5">
+      <h4 class="text-lg font-semibold mb-3 border-b pb-1 text-gray-700">🛒 Productos Comprados</h4>
+      <div class="max-h-64 overflow-y-auto border rounded-lg">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+            <tr>
+              <th class="px-4 py-2 text-left">Producto</th>
+              <th class="px-4 py-2 text-center">Color</th>
+              <th class="px-4 py-2 text-center">Talla</th>
+              <th class="px-4 py-2 text-center">Cant.</th>
+              <th class="px-4 py-2 text-right">P. Unitario</th>
+              <th class="px-4 py-2 text-right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of detalleProductos" class="border-b">
+              <td class="px-4 py-2">{{ item.nombreProducto }} ({{ item.codigoSubProducto }})</td>
+              <td class="px-4 py-2 text-center">{{ item.nombreColor }}</td>
+              <td class="px-4 py-2 text-center">{{ item.nombreTalla }}</td>
+              <td class="px-4 py-2 text-center">{{ item.cantidad }}</td>
+              <td class="px-4 py-2 text-right">S/. {{ item.precioUnitario | number:'1.2-2' }}</td>
+              <td class="px-4 py-2 text-right">S/. {{ item.subtotal | number:'1.2-2' }}</td>
+            </tr>
+            <tr *ngIf="detalleProductos?.length === 0">
+              <td colspan="6" class="px-4 py-4 text-center text-gray-500">No hay detalle de productos disponible.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="p-5 border-t">
+      <h4 class="text-lg font-semibold mb-3 border-b pb-1 text-gray-700">💰 Pagos y Comprobantes Realizados</h4>
+      <div class="max-h-48 overflow-y-auto border rounded-lg">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+            <tr>
+              <th class="px-4 py-2 text-left">Fecha Pago</th>
+              <th class="px-4 py-2 text-right">Monto</th>
+              <th class="px-4 py-2 text-center">Método</th>
+              <th class="px-4 py-2 text-center">Comprobante</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pago of registrosPagos" class="border-b">
+              <td class="px-4 py-2">{{ pago.fechaPago | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="px-4 py-2 text-right">S/. {{ pago.monto | number:'1.2-2' }}</td>
+              <td class="px-4 py-2 text-center">{{ pago.metodo }}</td>
+              <td class="px-4 py-2 text-center">
+               <div *ngIf="pago.comprobante; else sinArchivo">
+  <a
+    *ngFor="let comp of obtenerListaComprobantes(pago.comprobante)"
+    [href]="obtenerRutaComprobante(comp)"
+    target="_blank"
+    class="text-green-600 hover:underline font-medium block"
+  >
+    Ver Comprobante
+  </a>
+</div>
+
+<ng-template #sinArchivo>
+  <span class="text-gray-500">N/A</span>
+</ng-template>
+              </td>
+            </tr>
+            <tr *ngIf="registrosPagos?.length === 0">
+              <td colspan="4" class="px-4 py-4 text-center text-gray-500">No hay registros de pagos disponibles.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="p-5 border-t text-right">
+      <button (click)="cerrarModal()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400">Cerrar</button>
+    </div>
+  </div>
+</div>

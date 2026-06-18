@@ -1,0 +1,285 @@
+<div class="p-6 bg-white min-h-screen shadow-lg rounded-lg">
+
+  <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Productos y Variantes</h2>
+
+  <div role="tablist" class="tabs tabs-border">
+
+    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Visualizar Catálogo" checked />
+    <div role="tabpanel" class="tab-content bg-gray-100 p-6">
+      <div class="p-4 bg-white rounded-lg shadow">
+
+        <h3 class="text-xl font-semibold mb-4 text-gray-700">Catálogo de Productos Principales</h3>
+
+<div class="mb-4">
+          <input
+            type="text"
+            [(ngModel)]="textoBuscar"
+            placeholder="Buscar producto principal..."
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full table-auto text-sm text-left">
+            <thead class="bg-gray-200">
+              <tr>
+                <th class="px-4 py-2">ID Producto</th>
+                <th class="px-4 py-2">Producto Principal</th>
+                <th class="px-4 py-2">Foto</th>
+                <th class="px-4 py-2 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of filtrarproductos" class="border-b hover:bg-gray-50">
+                <td class="px-4 py-2">{{ t.idProductoPrincipal }}</td>
+                <td class="px-4 py-2">{{ t.nombreProducto }}</td>
+                <td class="px-4 py-2">
+                  <img [src]="'http://localhost:7038' + t.fotoProducto"
+                       alt="Foto producto"
+                       class="w-16 h-16 object-cover rounded" />
+                </td>
+                <td class="px-4 py-2 text-center space-x-2">
+                  <button (click)="verSubProducto(t)" class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-600 transition-colors">
+                    Ver Subproductos
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        </div>
+    </div>
+
+    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Crear Productos" />
+    <div role="tabpanel" class="tab-content bg-gray-100 p-6">
+      <div class="p-4 bg-white rounded-lg shadow">
+
+        <div class="bg-white rounded-lg p-4 mb-6">
+          <h3 class="text-xl font-semibold mb-4 text-gray-700">Crear Producto Principal</h3>
+          <form #form="ngForm" class="space-y-4" (ngSubmit)="onSubmit(form)">
+            <div>
+              <label for="nombreProducto" class="block text-sm font-medium text-gray-700">Nombre del Producto</label>
+              <input type="text" id="nombreProducto" name="nombreProducto" [(ngModel)]="producto.nombreProducto" class="mt-1 block w-full px-3 py-2 border rounded-md">
+            </div>
+            <div>
+              <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
+              <select id="categoria" name="categoria" [(ngModel)]="producto.idCategoria" class="mt-1 block w-full px-3 py-2 border rounded-md">
+                <option value="null">Selecciona una categoría</option>
+                <option *ngFor="let c of categorias" [value]="c.idCategoria">
+                  {{ c.nombreCategoria }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label for="proveedor" class="block text-sm font-medium text-gray-700">Proveedor</label>
+              <select id="proveedor" name="proveedor" [(ngModel)]="producto.idProveedor" class="mt-1 block w-full px-3 py-2 border rounded-md">
+                <option [ngValue]="null">Seleccione el proveedor</option>
+                <option *ngFor="let c of proveedores" [ngValue]="c.idProveedor">
+                  {{ c.nombreProveedor }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label for="fotoProducto" class="block text-sm font-medium text-gray-700 mb-1">
+                Foto del Producto
+              </label>
+
+              <div class="mt-2 flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-200"
+                   [ngClass]="previewUrl ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-blue-400'"
+                   (click)="fileInput.click()"
+                   (paste)="onPasteImage($event)">
+
+                <div *ngIf="!previewUrl" class="text-center text-gray-500 text-sm">
+                  <i class="fa-solid fa-image text-3xl mb-2"></i><br />
+                  <p>Pega (Ctrl + V) o haz clic para seleccionar una imagen</p>
+                </div>
+
+                <div *ngIf="previewUrl" class="relative">
+                  <img [src]="previewUrl" alt="Vista previa del producto" class="w-40 h-40 object-cover rounded-md shadow-md border" />
+                  <button type="button" class="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                          (click)="eliminarImagen($event)">
+                    ✕
+                  </button>
+                </div>
+
+                <input type="file" #fileInput id="fotoProducto" name="fotoProducto" accept="image/*" (change)="onFileSelected($event)" hidden />
+              </div>
+            </div>
+
+            <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md">Guardar Producto Principal</button>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-lg p-4">
+          <h3 class="text-xl font-semibold mb-4 text-gray-700">Crear Subproducto (Variante)</h3>
+          <form #formSub="ngForm" class="space-y-4" (ngSubmit)="onSubmitSub(formSub)">
+            <div class="relative z-50">
+              <label for="productoPrincipal" class="block text-sm font-medium text-gray-700">Producto Principal</label>
+              <ng-select [(ngModel)]="subProducto.idProductoPrincipal"
+                         [items]="productoPrincipal"
+                         bindLabel="nombreProducto"
+                         bindValue="idProductoPrincipal"
+                         placeholder="Selecciona o busca un Producto"
+                         [searchable]="true"
+                         [clearable]="true"
+                         class="mt-1 block w-full"
+                         name="idProductoPrincipal"
+                         [ngClass]="{'has-value': subProducto.idProductoPrincipal}">
+              </ng-select>
+            </div>
+
+            <div class="relative">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Colores</label>
+              <button type="button" (click)="mostrarColores = !mostrarColores"
+                      class="w-full flex justify-between items-center border rounded-md px-3 py-2 bg-white shadow-sm">
+                <span>{{ obtenerTextoColoresSeleccionados() }}</span>
+                ▼
+              </button>
+
+              <div *ngIf="mostrarColores" class="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-56 overflow-y-auto">
+                <div *ngFor="let c of color" class="px-3 py-2 flex items-center hover:bg-gray-100">
+                  <input type="checkbox" [checked]="subProducto.idColores.includes(c.idColor)" (change)="toggleColorSeleccionado(c.idColor)" class="mr-2" />
+                  <span>{{ c.nombreColor }}</span>
+                </div>
+                <div class="p-2 border-t bg-gray-50 text-center">
+                  <button type="button" (click)="abrirModalColor()" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+                    ➕ Agregar nuevo color
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tallas</label>
+              <button type="button" (click)="mostrarTallas = !mostrarTallas"
+                      class="w-full flex justify-between items-center border rounded-md px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <span class="text-gray-700">{{ obtenerTextoTallasSeleccionadas() }}</span>
+                <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <div *ngIf="mostrarTallas" class="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-56 overflow-y-auto">
+                <div *ngFor="let t of talla" class="px-3 py-2 flex items-center hover:bg-gray-100">
+                  <input type="checkbox" [checked]="subProducto.idTallas.includes(t.idTalla)" (change)="toggleTallaSeleccionada(t.idTalla)" class="mr-2" />
+                  <span class="text-gray-700">{{ t.nombreTalla }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="precioCompra" class="block text-sm font-medium text-gray-700">Precio de Compra</label>
+                <input type="number" id="precioCompra" [(ngModel)]="subProducto.precioCompra" step="0.01" name="precioCompra" class="mt-1 block w-full px-3 py-2 border rounded-md">
+              </div>
+              <div>
+                <label for="precioVenta" class="block text-sm font-medium text-gray-700">Precio de Venta</label>
+                <input type="number" id="precioVenta" [(ngModel)]="subProducto.precioVenta" step="0.01" name="precioVenta" class="mt-1 block w-full px-3 py-2 border rounded-md">
+              </div>
+              <div>
+                <label for="precioVentaPorMayor" class="block text-sm font-medium text-gray-700">Precio Venta x Mayor</label>
+                <input type="number" id="precioVentaPorMayor" [(ngModel)]="subProducto.precioVentaPorMayor" step="0.01" name="precioVentaPorMayor" class="mt-1 block w-full px-3 py-2 border rounded-md">
+              </div>
+              <div>
+                <label for="precioVentaLiquidacion" class="block text-sm font-medium text-gray-700">Precio Venta x Liquidación</label>
+                <input type="number" id="precioVentaLiquidacion" [(ngModel)]="subProducto.precioVentaLiquidacion" step="0.01" name="precioVentaLiquidacion" class="mt-1 block w-full px-3 py-2 border rounded-md">
+              </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md">Agregar Subproducto</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div *ngIf="mostrarModalColor" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+  <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+    <h3 class="text-lg font-bold mb-4">Registrar nuevo color</h3>
+    <div class="mb-3">
+      <label class="text-sm">Nombre del color</label>
+      <input type="text" [(ngModel)]="nuevoColor.nombreColor" (input)="actualizarAbreviatura()" class="w-full border px-3 py-2 rounded mt-1" placeholder="Ejemplo: Lila">
+    </div>
+    <div class="mb-4">
+      <label class="text-sm">Abreviatura</label>
+      <input type="text" [(ngModel)]="nuevoColor.abreviatura" readonly class="w-full border px-3 py-2 rounded mt-1" placeholder="Ejemplo: LIL">
+    </div>
+    <div class="flex justify-end gap-2">
+      <button (click)="cerrarModalColor()" class="px-3 py-1 bg-gray-400 text-white rounded">Cancelar</button>
+      <button (click)="guardarNuevoColor()" class="px-3 py-1 bg-green-600 text-white rounded">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="visualizarSubProducto" class="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-[9999]">
+
+  <div class="bg-white rounded-lg shadow-2xl w-11/12 md:w-3/4 lg:w-2/3 max-h-[90vh] flex flex-col relative overflow-hidden">
+
+    <div class="flex justify-between items-start p-5 border-b bg-gray-50 rounded-t-lg">
+      <div class="flex items-center gap-4">
+        <div class="w-16 h-16 bg-white rounded-md shadow-sm border flex items-center justify-center overflow-hidden flex-shrink-0">
+          <img *ngIf="productoSeleccionado?.fotoProducto"
+               [src]="'http://localhost:7038' + productoSeleccionado?.fotoProducto"
+               alt="Foto producto"
+               class="w-full h-full object-cover" />
+          <i *ngIf="!productoSeleccionado?.fotoProducto" class="fa-solid fa-image text-gray-300 text-2xl"></i>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-gray-800">Variantes del Producto</h3>
+          <p class="text-sm text-gray-600 font-medium mt-1">
+            <span class="text-blue-600">#{{ productoSeleccionado?.idProductoPrincipal }}</span> - {{ productoSeleccionado?.nombreProducto }}
+          </p>
+        </div>
+      </div>
+
+      <button (click)="cerrarModalSubProducto()" class="text-gray-400 hover:text-red-500 text-3xl font-bold leading-none transition-colors ml-4">
+        &times;
+      </button>
+    </div>
+
+    <div class="p-0 overflow-y-auto">
+      <table class="min-w-full table-auto text-sm text-left">
+        <thead class="bg-gray-200 sticky top-0 z-10 shadow-sm">
+          <tr>
+            <th class="px-5 py-3 font-semibold text-gray-700">ID Variant</th>
+            <th class="px-5 py-3 font-semibold text-gray-700">Color</th>
+            <th class="px-5 py-3 font-semibold text-gray-700">Talla</th>
+            <th class="px-5 py-3 font-semibold text-gray-700">P. Compra</th>
+            <th class="px-5 py-3 font-semibold text-gray-700">P. Venta</th>
+            <th class="px-5 py-3 font-semibold text-gray-700">Venta x Mayor</th>
+            <th class="px-5 py-3 font-semibold text-gray-700">Liquidación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b hover:bg-blue-50 transition-colors" *ngFor="let sub of subProductos">
+            <td class="px-5 py-3">{{ sub.idSubProducto }}</td>
+            <td class="px-5 py-3 font-medium">{{ sub.nombreColor }}</td>
+            <td class="px-5 py-3 font-medium">{{ sub.nombreTalla }}</td>
+            <td class="px-5 py-3">{{ sub.precioCompra }}</td>
+            <td class="px-5 py-3">{{ sub.precioVenta }}</td>
+            <td class="px-5 py-3">{{ sub.precioVentaPorMayor }}</td>
+            <td class="px-5 py-3 text-red-600 font-medium">{{ sub.precioVentaLiquidacion }}</td>
+          </tr>
+
+          <tr *ngIf="subProductos.length === 0">
+            <td colspan="7" class="px-5 py-8 text-center text-gray-500">
+              <p class="font-medium">No se encontraron subproductos registrados para este artículo.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="p-4 border-t flex justify-end bg-gray-50">
+      <button (click)="cerrarModalSubProducto()" class="px-6 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 shadow-sm transition-all">
+        Cerrar
+      </button>
+    </div>
+
+  </div>
+</div>

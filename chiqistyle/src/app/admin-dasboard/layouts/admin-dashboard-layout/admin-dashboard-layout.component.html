@@ -1,0 +1,173 @@
+<div class="flex h-screen bg-slate-100 text-slate-800">
+  <aside class="bg-pink-200 w-64 h-full fixed left-0 top-0 flex flex-col shadow-lg">
+    <!-- Logo -->
+   <div class="p-6 border-b border-gray-200 flex justify-center bg-gradient-to-r bg-pink-200 ">
+  <img src="img/logochiqi.png" alt="logo chiqisyle" class="w-36 h-auto object-contain" />
+</div>
+
+    <!-- Perfil -->
+    <div class="p-6 border-b border-gray-200">
+      <p class="text-gray-600 mb-2 text-sm">Bienvenido</p>
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-user-circle text-gray-700 text-3xl"></i>
+        <div>
+          <p class="font-bold text-gray-900 leading-tight">{{ usuario?.nombreCompleto }}</p>
+          <p class="text-xs text-gray-500">{{ usuario?.nombreRol }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegación -->
+    <nav class="flex-1 overflow-y-auto p-4 space-y-2 text-sm">
+      <a
+        *ngIf="tieneModulo('Dashboard')"
+        routerLink="/admin/dashboard"
+        routerLinkActive="bg-rose-300 font-semibold"
+        class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-rose-200 transition"
+      >
+        <i class="fa-solid fa-gauge text-gray-700"></i>
+        <span class="font-semibold">Dashboard</span>
+      </a>
+
+      <details
+        *ngIf="tieneModuloGrupo(['Cliente', 'Proveedor', 'Almacen', 'Color', 'Talla', 'Categoria', 'Productos'])"
+        class="group"
+        [open]="true"
+      >
+        <summary class="flex items-center justify-between px-3 py-2 rounded-md cursor-pointer hover:bg-pink-200 transition">
+          <span class="flex items-center space-x-2">
+            <i class="fa-solid fa-layer-group text-gray-700"></i>
+            <span class="font-semibold">Catálogo</span>
+          </span>
+        </summary>
+        <ul class="pl-8 mt-2 space-y-1 text-sm">
+          <li *ngIf="tieneModulo('Cliente')">
+            <a routerLink="/admin/cliente" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-user text-gray-600 mr-2"></i> Cliente
+            </a>
+          </li>
+          <li *ngIf="tieneModulo('Proveedor')">
+            <a routerLink="/admin/proveedor" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-truck-field text-gray-600 mr-2"></i> Proveedor
+            </a>
+          </li>
+          <li *ngIf="tieneModulo('Almacen')">
+            <a routerLink="/admin/almacen" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-boxes-stacked text-gray-600 mr-2"></i> Almacén
+            </a>
+          </li>
+          <li *ngIf="tieneModulo('Color')">
+            <a routerLink="/admin/color" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-palette text-gray-600 mr-2"></i> Color
+            </a>
+          </li>
+          <li *ngIf="tieneModulo('Talla')">
+            <a routerLink="/admin/talla" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-ruler text-gray-600 mr-2"></i> Talla
+            </a>
+          </li>
+          <li *ngIf="tieneModulo('Categoria')">
+            <a routerLink="/admin/categoria" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-tags text-gray-600 mr-2"></i> Categoría
+            </a>
+          </li>
+          <li *ngIf="tieneModulo('Productos')">
+            <a routerLink="/admin/Productos" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-shirt text-gray-600 mr-2"></i> Producto
+            </a>
+          </li>
+        </ul>
+      </details>
+
+      <details *ngIf="tieneModuloGrupo(['Compras', 'Ventas', 'PagosP', 'GestiónStockInve'])" class="group" [open]="true">
+        <summary class="flex items-center justify-between px-3 py-2 rounded-md cursor-pointer hover:bg-pink-200 transition">
+          <span class="flex items-center space-x-2">
+            <i class="fa-solid fa-cash-register text-gray-700"></i>
+            <span class="font-semibold">Operaciones</span>
+          </span>
+        </summary>
+        <ul class="pl-8 mt-2 space-y-1 text-sm">
+          <li *ngIf="tieneModulo('Compras')">
+            <a routerLink="/admin/compra" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-truck text-gray-600 mr-2"></i> Compra
+            </a>
+          </li>
+          <li *ngIf="tieneModulo('Ventas')">
+            <a routerLink="/admin/venta" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-cart-shopping text-gray-600 mr-2"></i> Venta
+            </a>
+          </li>
+          <li *ngIf="tieneModulo('PagosP')">
+            <a routerLink="/admin/gestion-pagos-pendientes" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-hand-holding-dollar text-gray-600 mr-2"></i> Pagos Pendientes
+            </a>
+          </li>
+          <li *ngIf="tieneModulo('GestiónStockInve')">
+            <a routerLink="/admin/gestion-inventario-stock" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+              <i class="fa-solid fa-boxes-packing text-gray-600 mr-2"></i> Gestión de Stock / Inventario
+            </a>
+          </li>
+        </ul>
+      </details>
+
+      <a
+        *ngIf="tieneModulo('Reportes')"
+        routerLink="/admin/reportes"
+        class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-rose-200 transition"
+      >
+        <i class="fa-solid fa-chart-line text-gray-700"></i>
+        <span class="font-semibold">Dashboard</span>
+      </a>
+ <a
+        *ngIf="tieneModulo('ReporteVenta')"
+        routerLink="/admin/reporte-ventas-page"
+        class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-rose-200 transition"
+      >
+        <i class="fa-solid fa-file-invoice-dollar text-lg"></i>
+        <span class="font-semibold">Reporte Ventas</span>
+      </a>
+      <a
+  *ngIf="tieneModulo('ReporteCompra')"
+  routerLink="/admin/reporte-compras-page"
+  routerLinkActive="bg-green-100 text-green-green-700 font-bold"
+  class="flex items-center space-x-3 px-4 py-2 rounded-md hover:bg-gray-100 transition duration-150 text-gray-700"
+>
+  <!-- Ícono: Camión de Entrega (Representa la entrada de mercancía/gastos) -->
+  <i class="fa-solid fa-truck-fast text-lg"></i>
+  <span class="font-semibold">Reporte de Compras</span>
+</a>
+
+<!-- 4. Reporte de Pagos por Cliente -->
+<a
+  *ngIf="tieneModulo('ReportePagosClientes')"
+  routerLink="/admin/reporte-pago-cliente-page"
+  routerLinkActive="bg-purple-100 text-purple-700 font-bold"
+  class="flex items-center space-x-3 px-4 py-2 rounded-md hover:bg-gray-100 transition duration-150 text-gray-700"
+>
+  <!-- Ícono: Tarjeta de Crédito (Representa el historial de pagos) -->
+  <i class="fa-solid fa-credit-card text-lg"></i>
+  <span class="font-semibold">Pagos por Cliente</span>
+</a>
+
+      <!-- <a
+        *ngIf="tieneModulo('Usuarios')"
+        routerLink="/admin/usuarios"
+        class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-rose-200 transition"
+      >
+        <i class="fa-solid fa-user-gear text-gray-700"></i>
+        <span class="font-semibold">Usuarios</span>
+      </a> -->
+    </nav>
+
+    <!-- Logout -->
+    <div class="p-4 border-t border-gray-200">
+      <button class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-md font-semibold transition" (click)="cerrarSesion()">
+        <i class="fa-solid fa-right-from-bracket mr-2"></i> Cerrar Sesión
+      </button>
+    </div>
+  </aside>
+
+  <main class="flex-1 ml-64 p-8 overflow-y-auto">
+    <router-outlet></router-outlet>
+  </main>
+</div>

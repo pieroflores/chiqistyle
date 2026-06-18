@@ -1,0 +1,430 @@
+<div class="p-6 bg-white rounded-xl shadow-xl space-y-6 max-w-full mt-4">
+
+    <h2 class="text-3xl font-extrabold text-gray-800 border-b pb-3 flex items-center justify-between">
+        Registro de Venta y Separación de Stock 🛒
+        <span class="text-sm font-normal text-gray-500">Mudsi.com</span>
+    </h2>
+
+    <section class="space-y-4 bg-gray-50 p-4 rounded-lg border">
+        <h3 class="text-xl font-semibold text-gray-700">Datos del Cliente y Venta</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div>
+                <label for="cliente" class="block text-sm font-medium text-gray-700">Cliente</label>
+           <ng-select
+  [(ngModel)]="idClienteSeleccionado"
+  [items]="clientes"
+  bindLabel="nombreCliente"
+  bindValue="idCliente"
+  placeholder="Selecciona o busca un cliente"
+  [searchable]="true"
+  [clearable]="true"
+  class="mt-1 block w-full"
+  [ngClass]="{'has-value': idClienteSeleccionado}"
+  [searchFn]="buscarCliente"
+   (search)="onBuscarCliente($event)"
+>
+
+  <ng-template ng-label-tmp let-item="item">
+    {{ item.nombreCliente }} - {{ item.telefono }}
+  </ng-template>
+  <ng-template ng-option-tmp let-item="item">
+    {{ item.nombreCliente }} - {{ item.telefono }}
+  </ng-template>
+
+</ng-select>
+<button
+  type="button"
+  (click)="abrirNuevoCliente()"
+  class="bg-rose-100 hover:bg-rose-200 text-rose-600 px-3 py-2 rounded-lg transition">
+  ➕
+</button>
+            </div>
+
+            <div>
+                <label for="fechaVenta" class="block text-sm font-medium text-gray-700">Fecha de Venta</label>
+                <input
+                    type="date"
+                    id="fechaVenta"
+                    name="fechaVenta"
+                    [(ngModel)]="fechaventa"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-base"
+                >
+            </div>
+
+            <div>
+                <label for="vendedor" class="block text-sm font-medium text-gray-700">Vendedor</label>
+                <input
+                    type="text"
+                    id="vendedor"
+                    name="vendedor"
+                    [value]="nombreVendedor"
+                    disabled
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-base"
+                >
+            </div>
+        </div>
+    </section>
+
+    <hr class="border-gray-200">
+
+    <section class="space-y-4">
+        <h3 class="text-xl font-semibold text-gray-700">Productos para el Pedido</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+
+            <div class="md:col-span-4">
+                <label for="idSubProducto" class="block text-sm font-medium text-gray-700">Producto / Variante</label>
+                  <!-- <select
+              id="producto"
+              name="producto"
+              [(ngModel)]="idProductoSeleccionado"
+              (change)="onProductoSeleccionado()"
+              class="mt-1 block w-full px-3 py-2 border rounded-md">
+              <option [ngValue]="null">Seleccione el producto</option>
+              <option *ngFor="let c of productoDisponibles" [ngValue]="c.idSubProducto">
+                {{ c.productoVariable }}
+              </option>
+            </select> -->
+           <ng-select
+  id="producto"
+  name="producto"
+  [(ngModel)]="idProductoSeleccionado"
+  [items]="productoDisponibles"
+  bindLabel="productoVariable"
+  bindValue="idSubProducto"
+  placeholder="Selecciona o busca un producto"
+  [searchable]="true"
+  [clearable]="true"
+  class="mt-1 block w-full"
+  [ngClass]="{'has-value': idProductoSeleccionado}"
+  [searchFn]="buscarProducto"
+  (change)="onProductoSeleccionado()"
+>
+<ng-template ng-label-tmp let-item="item">
+
+  <div class="flex items-center gap-2">
+
+    <img
+      *ngIf="item.fotoProducto"
+      [src]="'http://localhost:7038' + item.fotoProducto"
+      class="w-8 h-8 rounded object-cover border"
+    >
+
+    <span>
+      {{ item.productoVariable }}
+    </span>
+
+  </div>
+
+</ng-template>
+<ng-template ng-option-tmp let-item="item">
+
+  <div class="flex items-center gap-3 py-1">
+
+    <img
+      *ngIf="item.fotoProducto"
+      [src]="'http://localhost:7038' + item.fotoProducto"
+      class="w-14 h-14 rounded-lg object-cover border shadow-sm"
+    >
+
+    <div class="flex flex-col">
+
+      <span class="font-semibold text-sm text-gray-800">
+        {{ item.productoVariable }}
+      </span>
+
+    </div>
+
+  </div>
+
+</ng-template>
+</ng-select>
+            </div>
+            <div class="md:col-span-2">
+                <label for="tipoPrecio" class="block text-sm font-medium text-gray-700">Tipo Precio</label>
+                <select
+                    id="tipoPrecio"
+                    name="tipoPrecio"
+                    [(ngModel)]="usaPrecioPorMayor"
+                    (change)="actualizarPrecioVenta()"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-base font-semibold"
+                >
+                    <option [ngValue]="0">Precio Normal</option>
+                  <option [ngValue]="1">Precio Por Mayor</option>
+                <option [ngValue]="2">Precio Liquidación</option>
+                <option [ngValue]="3">Precio Especial</option>
+                </select>
+            </div>
+
+            <div class="md:col-span-2">
+                <label for="cantidad" class="block text-sm font-medium text-gray-700">Cantidad</label>
+                <input
+                    type="number"
+                    id="cantidad"
+                    name="cantidad"
+                    placeholder="1"
+                    min="1"
+                    [(ngModel)]="cantidad"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-base"
+                >
+            </div>
+
+           <div class="md:col-span-2">
+
+<label for="precioUnitario" class="block text-sm font-medium text-gray-700">
+Precio Unitario
+</label>
+
+<input
+type="number"
+id="precioUnitario"
+name="precioUnitario"
+[(ngModel)]="precioVenta"
+[disabled]="usaPrecioPorMayor !== 3"
+class="mt-1 block w-full px-3 py-2 border rounded-md font-semibold text-red-600"
+>
+
+</div>
+
+            <div class="md:col-span-2">
+                <label for="ubicacionTexto" class="block text-sm font-medium text-gray-700">Ubicación (Automática)</label>
+                <input
+                    type="text"
+                    id="ubicacionTexto"
+                    [(ngModel)]="ubicacionTexto"
+                    [value]="ubicacionTexto"
+                    disabled
+                    class="mt-1 block w-full px-3 py-2 bg-red-100 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-800"
+                >
+            </div>
+
+            <div class="md:col-span-2">
+                <label for="stockDisponible" class="block text-sm font-medium text-gray-700">Stock Disponible</label>
+                <input
+                    type="text"
+                    id="stockDisponible"
+                    [value]="stockDisponible + ' unidades'"
+                    disabled
+                    class="mt-1 block w-full px-3 py-2 bg-green-100 border border-green-300 rounded-md shadow-sm text-sm font-bold text-green-800"
+                >
+                <input type="hidden" id="idAlmacenHidden" name="idAlmacen" value="">
+            </div>
+
+            <div class="md:col-span-12 flex justify-end pt-2">
+                <button (click)="agregarDetalle()"
+                    type="button"
+                    class="py-2 px-5 border border-transparent rounded-md shadow-md text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out"
+                >
+                    Añadir al Pedido
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <hr class="border-gray-200">
+
+    <section class="space-y-4">
+        <h3 class="text-xl font-semibold text-gray-700">Productos Pendientes de Venta</h3>
+
+        <div class="overflow-x-auto rounded-lg border border-gray-300 shadow-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">PRODUCTO/VARIANTE</th>
+                        <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">UBICACIÓN</th>
+                        <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">CANTIDAD</th>
+                        <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">PRECIO U.</th>
+                        <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">SUBTOTAL</th>
+                        <th class="px-4 py-2 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let venta of VentaList; let i = index" class="hover:bg-red-50/50 transition-colors">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{venta.SubProducto}}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{venta.almacen}}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">{{venta.cantidad}}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">S/.{{venta.precioUnitario}}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-right text-red-700">S/.{{venta.cantidad * venta.precioUnitario}}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
+                            <button (click)="eliminarDetalle(i)" class="text-red-600 hover:text-red-900 font-semibold transition-colors text-xs">Quitar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <hr class="border-gray-200">
+
+    <section class="space-y-4 bg-red-50 p-4 rounded-lg border border-red-300">
+        <h3 class="text-xl font-semibold text-gray-700">Opciones de Pago y Estado Final</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+
+            <div>
+                <label for="estadoVenta" class="block text-sm font-medium text-gray-700">Tipo de Transacción</label>
+                <select
+                    id="estadoVenta"
+                    name="estadoVenta"
+                    [(ngModel)]="tipoTransaccion"
+                    required
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-base font-semibold"
+                >
+                   <option value="">Selecciona tipo Transacción...</option>
+                    <option value="COMPLETA">Venta Completa (Pago Total)</option>
+                    <option value="RESERVADA">Reserva (Pago Adelanto)</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="montoPagado" class="block text-sm font-medium text-gray-700">Monto Pagado / Adelanto</label>
+                <input
+                    type="number"
+                    id="montoPagado"
+                    name="montoPagado"
+                    placeholder="Ej: 160.00"
+                    [(ngModel)]="montoPagado"
+                    required
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-base"
+                >
+            </div>
+
+            <div>
+                <label for="metodoPago" class="block text-sm font-medium text-gray-700">Método de Pago</label>
+                <select
+                    id="metodoPago"
+                    name="metodoPago"
+                    [(ngModel)]="metodoPago"
+                    required
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-base"
+                >
+                    <option value="">Selecciona Método...</option>
+                    <option value="EFECTIVO">Efectivo</option>
+                    <option value="YAPE PIERO">Yape Piero</option>
+                    <option value="YAPE SANDRA">Yape Sandra</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="montoPendiente" class="block text-sm font-medium text-gray-700">Monto Pendiente</label>
+                <input
+                    type="text"
+                    id="montoPendiente"
+                    name="montoPendiente"
+                    [ngModel]="totalVenta - montoPagado"
+                    disabled
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-base font-bold text-blue-600"
+                >
+            </div>
+
+            <div
+                class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition relative"
+                (drop)="onFileDrop($event)"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (paste)="onPasteImage($event)"
+                [class.bg-blue-50]="isDragging"
+            >
+                <p class="text-sm text-gray-600 mb-2">
+                    📸 Arrastra o <b>pega (Ctrl + V)</b> tu comprobante aquí
+                </p>
+
+                <input
+    type="file"
+    accept="image/*"
+    multiple
+    (change)="onFileSelected($event)"
+    class="absolute inset-0 opacity-0 cursor-pointer"
+/>
+
+               <div *ngIf="previewUrls.length > 0" class="mt-4 flex flex-wrap gap-2 justify-center">
+
+    <div *ngFor="let img of previewUrls; let i = index" class="relative">
+
+        <img [src]="img"
+             class="w-28 h-28 object-cover rounded-md shadow border">
+
+        <button
+            type="button"
+            (click)="eliminarImagen(i)"
+            class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full px-2 text-xs">
+            X
+        </button>
+
+    </div>
+
+</div>
+
+                <div *ngIf="previewUrls.length === 0" class="text-xs text-gray-400 italic mt-2">
+    (Haz clic o pega una imagen)
+</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="flex justify-end items-center pt-4 pr-2">
+        <div class="text-xl font-bold text-gray-800 mr-8">
+            Total Venta: <span class="text-red-600">S/.{{totalVenta}}</span>
+        </div>
+
+        <button
+            type="submit"
+            (click)="agregarVenta()"
+            class="py-2.5 px-6 border border-transparent rounded-lg shadow-xl text-lg font-bold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out"
+        >
+            Finalizar Registro de Venta ✅
+        </button>
+    </div>
+</div>
+<div *ngIf="mostrarModalCliente"
+class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+
+  <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+
+    <h3 class="text-lg font-bold mb-4">Registrar Cliente</h3>
+<div class="mb-3">
+      <label>DNI</label>
+      <input [(ngModel)]="nuevoCliente.dni"  (blur)="buscarDniRapido()"
+             maxlength="8"
+             class="w-full border px-3 py-2 rounded mt-1">
+    </div>
+
+    <div class="mb-3">
+      <label>Nombre</label>
+      <input [(ngModel)]="nuevoCliente.nombreCliente"
+             class="w-full border px-3 py-2 rounded mt-1">
+    </div>
+
+
+
+    <div class="mb-4">
+      <label>Teléfono</label>
+      <input [(ngModel)]="nuevoCliente.telefono"
+             maxlength="9"
+             class="w-full border px-3 py-2 rounded mt-1">
+    </div>
+    <div class="mb-4">
+  <label>Dirección</label>
+  <input [(ngModel)]="nuevoCliente.direccion"
+         class="w-full border px-3 py-2 rounded mt-1">
+</div>
+
+    <div class="flex justify-end gap-2">
+
+      <button
+        (click)="cerrarModalCliente()"
+        class="px-3 py-1 bg-gray-400 text-white rounded">
+        Cancelar
+      </button>
+
+      <button
+        (click)="guardarClienteRapido()"
+        class="px-3 py-1 bg-green-600 text-white rounded">
+        Guardar
+      </button>
+
+    </div>
+
+  </div>
+</div>

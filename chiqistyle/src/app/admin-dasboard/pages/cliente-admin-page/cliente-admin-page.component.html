@@ -1,0 +1,89 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+
+  <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Clientes</h2>
+
+  <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <div class="mb-4">
+      <input
+  type="text"
+  placeholder="Buscar por nombre o Dni..."
+  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+  [(ngModel)]="busqueda"
+  (input)="filtrarCliente()"
+/>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full table-auto text-sm text-left">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Nombre del Cliente</th>
+            <th class="px-4 py-2">DNI</th>
+            <th class="px-4 py-2">Dirección</th>
+            <th class="px-4 py-2">Telefono</th>
+            <th class="px-4 py-2 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of clientesFiltradas" class="border-b hover:bg-gray-50">
+      <td class="px-4 py-2">{{ c.idCliente  }}</td>
+      <td class="px-4 py-2">{{ c.nombreCliente  }}</td>
+      <td class="px-4 py-2">{{ c.dni  }}</td>
+      <td class="px-4 py-2">{{ c.direccion  }}</td>
+      <td class="px-4 py-2">{{ c.telefono  }}</td>
+      <td class="px-4 py-2 text-center space-x-2">
+        <button (click)="editarCliente(c)" class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-600 transition-colors">
+          Editar
+        </button>
+        <button (click)="eliminarCliente(c.idCliente!)"
+  class="bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600 transition-colors">
+  Eliminar
+</button>
+
+      </td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-4">
+    <h3 class="text-xl font-semibold mb-4 text-gray-700">
+      {{ clienteEnEdicion != null ? 'Actualizar Cliente' : 'Agregar Nuevo Cliente' }}
+    </h3>
+
+    <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()"  class="space-y-4">
+      <div>
+        <label for="dni" class="block text-sm font-medium text-gray-700">DNI</label>
+        <input type="text" id="dni" name="dni" formControlName="DNI" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" (blur)="buscarDni()">
+      </div>
+      <div>
+        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre del Cliente</label>
+        <input type="text" id="nombre" name="nombre" formControlName="NombreCliente" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+
+
+      <div>
+        <label for="direccion" class="block text-sm font-medium text-gray-700">Dirección Agencia Shalom</label>
+        <input type="text" id="direccion" formControlName="Direccion" name="direccion" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div>
+        <label for="telefono" class="block text-sm font-medium text-gray-700">Telefono</label>
+        <input type="text" id="telefono" formControlName="telefono"  maxlength="9" name="telefono" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div>
+        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+          Guardar Cliente
+        </button>
+      </div>
+      <div>
+        <button (click)="cancelarEdicion()" type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,92 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+
+  <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Colores</h2>
+
+  <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <!-- <div class="mb-4">
+      <input
+        type="text"
+        placeholder="Buscar por nombre..."
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+    </div> -->
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full table-auto text-sm text-left">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Nombre del Color</th>
+            <th class="px-4 py-2">Abreviatura</th>
+            <th class="px-4 py-2 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of colores" class="border-b hover:bg-gray-50">
+            <td class="px-4 py-2">{{ c.idColor }}</td>
+            <td class="px-4 py-2">{{ c.nombreColor }}</td>
+            <td class="px-4 py-2">{{ c.abreviatura }}</td>
+            <td class="px-4 py-2 text-center space-x-2">
+              <button
+                (click)="editar(c)"
+                class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-600 transition-colors">
+                Editar
+              </button>
+              <button
+                (click)="eliminar(c.idColor!)"
+                class="bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600 transition-colors">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-4">
+    <h3 class="text-xl font-semibold mb-4 text-gray-700">
+      {{ editando ? 'Editar Color' : 'Agregar Nuevo Color' }}
+    </h3>
+
+    <form [formGroup]="formColor" (ngSubmit)="guardarColor()" class="space-y-4">
+
+      <div>
+        <label for="nombreColor" class="block text-sm font-medium text-gray-700">Nombre del Color</label>
+        <input
+          type="text"
+          id="nombreColor"
+          formControlName="nombreColor"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <div *ngIf="formColor.get('nombreColor')?.invalid && formColor.get('nombreColor')?.touched" class="text-red-500 text-xs mt-1">
+            El nombre es obligatorio.
+          </div>
+      </div>
+
+      <div>
+        <label for="abreviatura" class="block text-sm font-medium text-gray-700">Abreviatura</label>
+        <input
+          type="text"
+          id="abreviatura"
+          formControlName="abreviatura"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button
+          type="submit"
+          class="bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+          {{ editando ? 'Actualizar Color' : 'Guardar Color' }}
+        </button>
+
+        <button
+          *ngIf="editando"
+          (click)="cancelarEdicion()"
+          type="button"
+          class="bg-gray-400 text-white py-2 px-4 rounded-md shadow-sm hover:bg-gray-500 transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

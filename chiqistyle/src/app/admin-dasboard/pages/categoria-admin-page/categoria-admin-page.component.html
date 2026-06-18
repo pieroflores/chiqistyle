@@ -1,0 +1,88 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+
+  <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Categorías</h2>
+
+  <!-- 🔹 Tabla de Categorías -->
+  <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <!-- <div class="mb-4">
+      <input
+        type="text"
+        placeholder="Buscar por nombre..."
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+    </div> -->
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full table-auto text-sm text-left">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Nombre de la Categoría</th>
+            <th class="px-4 py-2 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Recorrer la lista de categorías -->
+          <tr *ngFor="let c of categorias" class="border-b hover:bg-gray-50">
+            <td class="px-4 py-2">{{ c.idCategoria }}</td>
+            <td class="px-4 py-2">{{ c.nombreCategoria }}</td>
+            <td class="px-4 py-2 text-center space-x-2">
+              <button
+                (click)="editar(c)"
+                class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-600 transition-colors">
+                Editar
+              </button>
+              <button
+                (click)="eliminar(c.idCategoria!)"
+                class="bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600 transition-colors">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 🔹 Formulario de Inserción/Edición -->
+  <div class="bg-white rounded-lg shadow p-4">
+    <h3 class="text-xl font-semibold mb-4 text-gray-700">
+      {{ editando ? 'Editar Categoría' : 'Agregar Nueva Categoría' }}
+    </h3>
+
+    <form [formGroup]="formCategoria" (ngSubmit)="guardarCategoria()" class="space-y-4">
+
+      <!-- Nombre de la Categoría -->
+      <div>
+        <label for="nombreCategoria" class="block text-sm font-medium text-gray-700">Nombre de la Categoría</label>
+        <input
+          type="text"
+          id="nombreCategoria"
+          formControlName="nombreCategoria"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <!-- Opcional: Mostrar error de validación -->
+          <div *ngIf="formCategoria.get('nombreCategoria')?.invalid && formCategoria.get('nombreCategoria')?.touched" class="text-red-500 text-xs mt-1">
+            El nombre es obligatorio.
+          </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="flex justify-end gap-3 pt-2">
+        <button
+          type="submit"
+          [disabled]="formCategoria.invalid"
+          class="bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors disabled:opacity-50">
+          {{ editando ? 'Actualizar Categoría' : 'Guardar Categoría' }}
+        </button>
+
+        <button
+          *ngIf="editando"
+          (click)="cancelarEdicion()"
+          type="button"
+          class="bg-gray-400 text-white py-2 px-4 rounded-md shadow-sm hover:bg-gray-500 transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

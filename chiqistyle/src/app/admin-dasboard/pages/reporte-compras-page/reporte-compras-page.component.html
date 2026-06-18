@@ -1,0 +1,89 @@
+<div class="p-6 bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen rounded-2xl shadow-sm">
+  <h2 class="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+    🧾 Reporte de Compras
+  </h2>
+
+  <!-- 🔹 Filtros -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-white p-4 rounded-lg shadow-md border">
+    <div>
+      <label class="block text-sm font-medium text-gray-600">Fecha Inicio</label>
+      <input type="date" [(ngModel)]="fechaInicio" class="w-full border rounded-md px-3 py-2" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-600">Fecha Fin</label>
+      <input type="date" [(ngModel)]="fechaFin" class="w-full border rounded-md px-3 py-2" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-600">Proveedor</label>
+      <select [(ngModel)]="idProveedor" class="w-full border rounded-md px-3 py-2">
+        <option value="0">Todos</option>
+        <option *ngFor="let p of proveedores" [value]="p.idProveedor">
+          {{ p.nombreProveedor }}
+        </option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-600">Estado</label>
+      <select [(ngModel)]="estado" class="w-full border rounded-md px-3 py-2">
+        <option value="Todos">Todos</option>
+        <option value="Registrado">Registrado</option>
+        <!-- <option value="Pendiente">Pendiente</option>
+        <option value="Pagado">Pagado</option> -->
+      </select>
+    </div>
+  </div>
+
+  <!-- 🔸 Botones -->
+  <div class="flex justify-between mb-4">
+    <button (click)="obtenerReporte()" class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition">
+      🔍 Buscar
+    </button>
+    <button (click)="exportarExcel()" class="bg-green-600 text-white px-5 py-2 rounded-md hover:bg-green-700 transition">
+      📤 Exportar Excel
+    </button>
+  </div>
+
+  <!-- 🔹 Resumen de compras -->
+  <div class="mt-6 p-5 bg-white rounded-xl shadow-lg border border-gray-200">
+    <h3 class="text-xl font-bold mb-3 text-gray-800">📊 Resumen de Compras</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
+      <div class="p-3 bg-blue-50 rounded-lg">
+        <p class="text-sm text-gray-600">Total Comprado</p>
+        <p class="text-2xl font-bold text-blue-700">S/. {{ totalCompras() | number:'1.2-2' }}</p>
+      </div>
+      <div class="p-3 bg-green-50 rounded-lg">
+        <p class="text-sm text-gray-600">Cantidad de Compras</p>
+        <p class="text-2xl font-bold text-green-700">{{ compras.length }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔹 Tabla -->
+  <div class="overflow-x-auto bg-white shadow-md rounded-lg border mt-5">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-semibold">
+        <tr>
+          <th class="px-4 py-3 text-left">Proveedor</th>
+          <th class="px-4 py-3 text-left">Fecha Compra</th>
+          <th class="px-4 py-3 text-right">Total</th>
+          <th class="px-4 py-3 text-center">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of compras" class="border-b hover:bg-gray-50 transition">
+          <td class="px-4 py-2">{{ c.nombreProveedor }}</td>
+          <td class="px-4 py-2">{{ c.fechaCompra | date:'dd/MM/yyyy' }}</td>
+          <td class="px-4 py-2 text-right">S/. {{ c.total | number:'1.2-2' }}</td>
+          <td class="px-4 py-2 text-center">
+            <span [ngClass]="{
+              'bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium': c.estado === 'Pagado',
+              'bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium': c.estado === 'Pendiente'
+            }">
+              {{ c.estado }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

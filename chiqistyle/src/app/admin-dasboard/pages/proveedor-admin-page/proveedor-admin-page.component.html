@@ -1,0 +1,110 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+
+  <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Proveedores</h2>
+
+  <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <div class="mb-4">
+      <input
+  type="text"
+  placeholder="Buscar por nombre o ruc..."
+  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+  [(ngModel)]="busqueda"
+  (input)="filtrarProveedor()"
+/>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full table-auto text-sm text-left">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Nombre del Proveedor</th>
+            <th class="px-4 py-2">RUC</th>
+            <th class="px-4 py-2">Dirección</th>
+            <th class="px-4 py-2">Teléfono</th>
+            <th class="px-4 py-2">Email</th>
+            <th class="px-4 py-2 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let p of proveedorFiltradas" class="border-b hover:bg-gray-50">
+      <td class="px-4 py-2">{{ p.idProveedor  }}</td>
+      <td class="px-4 py-2">{{ p.nombreProveedor  }}</td>
+      <td class="px-4 py-2">{{ p.ruc  }}</td>
+      <td class="px-4 py-2">{{ p.direccion  }}</td>
+      <td class="px-4 py-2">{{ p.telefono  }}</td>
+      <td class="px-4 py-2">{{ p.email  }}</td>
+      <td class="px-4 py-2 text-center space-x-2">
+        <button (click)="editarProveedor(p)" class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-600 transition-colors">
+          Editar
+        </button>
+        <button (click)="eliminarProveedor(p.idProveedor!)"
+  class="bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600 transition-colors">
+  Eliminar
+</button>
+
+      </td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-4">
+    <h3 class="text-xl font-semibold mb-4 text-gray-700">
+       {{ proveedorEnEdicion != null ? 'Actualizar Proveedor' : 'Agregar Nuevo Proveedor' }}
+    </h3>
+
+    <form [formGroup]="proveedorForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <div>
+        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre del Proveedor</label>
+        <input type="text" id="nombre" formControlName="nombreProveedor" name="nombre" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div>
+        <label for="ruc" class="block text-sm font-medium text-gray-700">RUC</label>
+        <!-- <input type="number" id="ruc" name="ruc" formControlName="ruc" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> -->
+      <input
+  type="text"
+  formControlName="ruc"
+  pattern="[0-9]*"
+  maxlength="11"
+ class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+/>
+      </div>
+
+      <div>
+        <label for="direccion" class="block text-sm font-medium text-gray-700">Dirección</label>
+        <input type="text" id="direccion" name="direccion" formControlName="direccion" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div>
+        <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+        <!-- <input type="number" id="telefono" name="telefono" formControlName="telefono" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> -->
+        <input
+  type="text"
+  formControlName="telefono"
+  pattern="[0-9]*"
+  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+/>
+      </div>
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+        <input type="email" id="email" name="email" formControlName="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div>
+        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+          Guardar Proveedor
+        </button>
+
+      </div>
+      <div>
+         <button (click)="cancelarEdicion()" type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,457 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+
+  <!-- ENCABEZADO -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+    <h2 class="text-3xl font-extrabold text-gray-800">
+      🧾 Clientes con Deuda
+    </h2>
+  </div>
+
+  <!-- BUSCADOR -->
+  <div class="mb-4 flex gap-3 items-center">
+    <div class="relative w-full max-w-md">
+      <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="filtroBusqueda"
+        placeholder="Buscar por nombre o DNI..."
+        class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm
+               focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+      />
+    </div>
+    <button
+      *ngIf="filtroBusqueda"
+      (click)="filtroBusqueda = ''"
+      class="text-sm text-gray-500 hover:text-red-500 border px-3 py-2 rounded-lg"
+    >
+      ✕ Limpiar
+    </button>
+  </div>
+
+  <!-- TABLA CLIENTES -->
+  <div class="overflow-x-auto bg-white rounded-xl shadow-xl border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold">
+        <tr>
+          <th class="px-4 py-3 text-left">Cliente</th>
+          <th class="px-4 py-3 text-left">DNI</th>
+          <th class="px-4 py-3 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <tr *ngFor="let venta of clientesFiltrados" class="hover:bg-red-50">
+          <td class="px-4 py-3 font-semibold text-gray-800">
+            {{ venta.nombreCliente }}
+          </td>
+          <td class="px-4 py-3">
+            {{ venta.dni }}
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
+              (click)="abrirDetalleCliente(venta)"
+            >
+              👁 Ver Ventas
+            </button>
+          </td>
+        </tr>
+
+        <!-- Sin resultados -->
+        <tr *ngIf="clientesFiltrados.length === 0">
+          <td colspan="3" class="px-4 py-8 text-center text-gray-400 text-sm">
+            {{ filtroBusqueda
+               ? '😕 No se encontraron clientes con ese nombre o DNI.'
+               : '✅ No hay clientes con deuda.' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+<!-- ============================================================ -->
+<!-- MODAL DETALLE CLIENTE                                         -->
+<!-- ============================================================ -->
+<div
+  *ngIf="modalDetalleVisible"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl p-8 relative max-h-[90vh] overflow-y-auto">
+
+    <!-- BOTÓN CERRAR -->
+    <button
+      class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-2xl"
+      (click)="cerrarModalDetalle()"
+    >&times;</button>
+
+    <!-- TÍTULO -->
+    <h2 class="text-2xl font-bold mb-4">📋 Ventas del Cliente</h2>
+
+    <!-- DEUDA TOTAL -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+      <p class="text-lg font-bold text-red-700">💰 Deuda Total del Cliente:</p>
+      <p class="text-2xl font-extrabold text-red-600">S/. {{ totalDeudaCliente }}</p>
+    </div>
+
+    <!-- LISTA DE VENTAS (botones) -->
+    <div class="mb-6">
+      <p class="text-sm font-semibold text-gray-600 mb-2">Seleccionar Venta</p>
+      <div class="flex flex-wrap gap-2">
+        <button
+          *ngFor="let v of ventasPendientes"
+          (click)="abrirDetalle(v)"
+          [class.bg-blue-600]="ventaSeleccionada?.idVenta === v.idVenta"
+          [class.text-white]="ventaSeleccionada?.idVenta === v.idVenta"
+          class="px-4 py-2 border rounded-lg text-sm hover:bg-blue-600 hover:text-white transition"
+        >
+          Venta #{{ v.idVenta }} | Pendiente S/. {{ v.montoPendiente }}
+        </button>
+      </div>
+    </div>
+
+    <!-- DETALLE DE LA VENTA SELECCIONADA -->
+    <div *ngIf="ventaSeleccionada">
+      <div class="border-t pt-4">
+        <h3 class="text-xl font-bold mb-4">
+          Detalle de Venta #{{ ventaSeleccionada.idVenta }}
+        </h3>
+
+        <!-- DATOS RESUMEN -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6 text-sm">
+          <div>
+            <p class="text-gray-500">Cliente</p>
+            <p class="font-semibold">{{ ventaSeleccionada.nombreCliente }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500">Fecha</p>
+            <p>{{ ventaSeleccionada.fechaVenta | date:'dd/MM/yyyy' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500">Total</p>
+            <p class="font-bold">S/. {{ ventaSeleccionada.total }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500">Pagado</p>
+            <p class="text-green-600 font-bold">S/. {{ ventaSeleccionada.montoPagado }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500">Pendiente</p>
+            <p class="text-red-600 font-bold">S/. {{ ventaSeleccionada.montoPendiente }}</p>
+          </div>
+          <div>
+            <p class="text-gray-500">Método</p>
+            <p>{{ ventaSeleccionada.metodoPago ?? '—' }}</p>
+          </div>
+        </div>
+
+        <!-- ✅ COMPROBANTES DE LA VENTA ORIGINAL (al momento de separar) -->
+        <div
+          *ngIf="obtenerComprobantesVentaOriginal().length > 0"
+          class="mb-6 p-3 bg-yellow-50 border border-yellow-200 rounded-lg"
+        >
+          <p class="text-sm font-semibold text-yellow-800 mb-2">
+            🧾 Comprobante(s) adjunto(s) al crear la venta:
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a
+              *ngFor="let ruta of obtenerComprobantesVentaOriginal(); let i = index"
+              [href]="obtenerRutaComprobante(ruta)"
+              target="_blank"
+            >
+              <img
+                *ngIf="esImagen(ruta)"
+                [src]="obtenerRutaComprobante(ruta)"
+                class="w-28 h-28 object-cover border-2 border-yellow-300 rounded-md
+                       hover:opacity-80 hover:scale-105 transition"
+                [alt]="'Comprobante inicial ' + (i + 1)"
+              />
+              <span
+                *ngIf="!esImagen(ruta)"
+                class="text-xs text-blue-600 underline"
+              >📄 Ver archivo {{ i + 1 }}</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PRODUCTOS -->
+        <div class="overflow-x-auto border rounded-lg mb-6">
+          <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <thead class="bg-gray-100 text-xs uppercase font-bold">
+              <tr>
+                <th class="px-4 py-3 text-left">Producto</th>
+                <th class="px-4 py-3 text-left">Código</th>
+                <th class="px-4 py-3 text-right">Cantidad</th>
+                <th class="px-4 py-3 text-right">Precio</th>
+                <th class="px-4 py-3 text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y">
+              <tr *ngFor="let item of detalleVenta">
+                <td class="px-4 py-3">{{ item.nombreProducto }}</td>
+                <td class="px-4 py-3">{{ item.codigoSubProducto }}</td>
+                <td class="px-4 py-3 text-right">{{ item.cantidad }}</td>
+                <td class="px-4 py-3 text-right">S/. {{ item.precioUnitario }}</td>
+                <td class="px-4 py-3 text-right font-bold">S/. {{ item.subtotal }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ✅ HISTORIAL DE PAGOS (adelantos con sus comprobantes) -->
+        <div class="mt-2" *ngIf="pagosVenta.length > 0">
+          <h3 class="text-lg font-semibold mb-3">💳 Historial de Pagos (adelantos)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div
+              *ngFor="let p of pagosVenta"
+              class="border rounded-lg p-3 bg-gray-50 shadow-sm"
+            >
+              <p class="text-sm"><b>Monto:</b> S/. {{ p.monto }}</p>
+              <p class="text-sm"><b>Método:</b> {{ p.metodo }}</p>
+              <p class="text-xs text-gray-500">
+                {{ p.fechaPago | date:'dd/MM/yyyy HH:mm' }}
+              </p>
+
+              <!-- ✅ Comprobantes del adelanto (soporta múltiples separados por coma) -->
+              <div *ngIf="p.comprobante && p.comprobante.trim() !== ''"
+                   class="flex flex-wrap gap-2 mt-2">
+                <ng-container
+                  *ngFor="let ruta of obtenerListaComprobantes(p.comprobante); let i = index"
+                >
+                  <a
+                    *ngIf="esImagen(ruta)"
+                    [href]="obtenerRutaComprobante(ruta)"
+                    target="_blank"
+                  >
+                    <img
+                      [src]="obtenerRutaComprobante(ruta)"
+                      class="w-28 h-28 object-cover border rounded-md
+                             hover:opacity-80 hover:scale-105 transition cursor-pointer"
+                      [alt]="'Comprobante pago ' + (i + 1)"
+                    />
+                  </a>
+                  <a
+                    *ngIf="!esImagen(ruta)"
+                    [href]="obtenerRutaComprobante(ruta)"
+                    target="_blank"
+                    class="text-xs text-blue-600 underline"
+                  >📄 Ver archivo {{ i + 1 }}</a>
+                </ng-container>
+              </div>
+
+              <!-- Sin comprobante -->
+              <p
+                *ngIf="!p.comprobante || p.comprobante.trim() === ''"
+                class="text-xs text-gray-400 mt-2 italic"
+              >Sin comprobante adjunto</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sin pagos registrados -->
+        <div *ngIf="pagosVenta.length === 0" class="mt-4">
+          <p class="text-sm text-gray-400 italic">No hay pagos/adelantos registrados para esta venta.</p>
+        </div>
+
+        <!-- BOTÓN PAGAR TOTAL -->
+        <div class="flex justify-end mt-8">
+          <button
+            (click)="abrirModalPago()"
+            class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-md"
+          >
+            💰 Pagar Deuda Total del Cliente
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- MODAL REGISTRAR PAGO GRUPAL                                   -->
+<!-- ============================================================ -->
+<div
+  *ngIf="modalPagoVisible"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl p-6 relative">
+
+    <!-- CERRAR -->
+    <button
+      class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-2xl"
+      (click)="cerrarModalPago()"
+    >&times;</button>
+
+    <h2 class="text-xl font-bold mb-2">💰 Registrar Pago Total del Cliente</h2>
+
+    <!-- INFO DEUDA TOTAL -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-sm">
+      <p class="text-red-700 font-semibold">
+        Deuda total del cliente:
+        <span class="text-red-600 font-extrabold text-base">
+          S/. {{ totalDeudaCliente }}
+        </span>
+      </p>
+      <p class="text-gray-500 text-xs mt-1">
+        El monto se distribuirá automáticamente entre todas las ventas pendientes.
+      </p>
+    </div>
+
+    <!-- VENTAS QUE SE CUBRIRÁN (informativo) -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-700">
+      <p class="font-semibold mb-1">📋 Ventas pendientes que se cubrirán:</p>
+      <ul class="list-disc list-inside space-y-1">
+        <li *ngFor="let v of ventasPendientes">
+          Venta #{{ v.idVenta }} — Pendiente: S/. {{ v.montoPendiente }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="space-y-4">
+
+      <!-- MONTO -->
+      <div>
+        <label class="block text-sm font-semibold mb-1">Monto a pagar</label>
+        <input
+          type="number"
+          [(ngModel)]="montoAdicional"
+          class="w-full border rounded-md px-3 py-2"
+          [max]="totalDeudaCliente"
+          min="0"
+        />
+        <p
+          *ngIf="montoAdicional < totalDeudaCliente && montoAdicional > 0"
+          class="text-xs text-orange-500 mt-1"
+        >
+          ⚠️ Pago parcial. Quedarán S/. {{ (totalDeudaCliente - montoAdicional) | number:'1.2-2' }} pendientes.
+        </p>
+      </div>
+
+      <!-- MÉTODO -->
+      <div>
+        <label class="block text-sm font-semibold mb-1">Método de Pago</label>
+        <select [(ngModel)]="metodoPago" class="w-full border rounded-md px-3 py-2">
+          <option value="">Seleccionar</option>
+          <option value="EFECTIVO">Efectivo</option>
+                    <option value="YAPE PIERO">Yape Piero</option>
+                    <option value="YAPE SANDRA">Yape Sandra</option>
+        </select>
+        <!-- Aviso: métodos TESMA no generan PDF -->
+        <p
+          *ngIf="metodoPago.includes('TESMA')"
+          class="text-xs text-blue-500 mt-1"
+        >
+          ℹ️ Método TESMA: no se generará PDF automático.
+        </p>
+        <!-- Aviso: otros métodos sí generan PDF -->
+        <p
+          *ngIf="metodoPago && !metodoPago.includes('TESMA') && montoAdicional >= totalDeudaCliente"
+          class="text-xs text-green-600 mt-1"
+        >
+          🖨️ Se generará un PDF de comprobante automáticamente al guardar.
+        </p>
+      </div>
+
+   <!-- COMPROBANTES MÚLTIPLES -->
+<div>
+
+  <label class="block text-sm font-semibold mb-1">
+    Subir Comprobante(s)
+    <span class="text-gray-400 font-normal text-xs">
+      (opcional, puedes subir varios)
+    </span>
+  </label>
+
+
+  <!-- ZONA PARA SELECCIONAR O PEGAR IMAGEN -->
+  <div
+    class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50"
+    (paste)="pegarImagen($event)"
+  >
+
+
+    <p class="text-sm text-gray-600">
+      📷 Selecciona o pega tu comprobante
+    </p>
+
+    <p class="text-xs text-gray-400 mt-1">
+      Puedes usar Ctrl + V para pegar imágenes
+    </p>
+
+
+    <input
+      type="file"
+      multiple
+      accept="image/*"
+      (change)="onFilesSelected($event)"
+      class="w-full mt-3 text-sm"
+    />
+
+
+  </div>
+
+
+
+  <!-- PREVISUALIZACIÓN DE IMÁGENES -->
+  <div
+    class="flex flex-wrap gap-3 mt-3"
+    *ngIf="comprobantePreviews.length > 0"
+  >
+
+
+    <div
+      *ngFor="let preview of comprobantePreviews; let i=index"
+      class="relative"
+    >
+
+
+      <img
+        [src]="preview"
+        class="w-24 h-24 object-cover border rounded-lg"
+      >
+
+
+      <button
+        type="button"
+        (click)="eliminarComprobante(i)"
+        class="absolute -top-2 -right-2
+               bg-red-500 text-white
+               rounded-full w-6 h-6"
+      >
+        ×
+      </button>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>
+
+      <!-- BOTONES -->
+      <div class="flex justify-end gap-3 pt-3">
+        <button
+          (click)="cerrarModalPago()"
+          class="px-4 py-2 border rounded-md hover:bg-gray-50"
+        >Cancelar</button>
+        <button
+          (click)="registrarPagoGrupal()"
+          [disabled]="guardandoPago"
+          class="bg-green-600 hover:bg-green-700 disabled:bg-green-300
+                 text-white px-5 py-2 rounded-md font-semibold flex items-center gap-2"
+        >
+          <span *ngIf="guardandoPago">⏳</span>
+          <span *ngIf="!guardandoPago">✅</span>
+          {{ guardandoPago ? 'Guardando...' : 'Guardar Pago' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
