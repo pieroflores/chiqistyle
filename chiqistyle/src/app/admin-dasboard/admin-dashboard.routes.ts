@@ -15,7 +15,7 @@ import { GestionPagosPendienteAdminPageComponent } from "./pages/gestion-pagos-p
 import { StockListPageComponent } from "./pages/stock-list-page/stock-list-page.component";
 import { ReporteVentasPageComponent } from "./pages/reporte-ventas-page/reporte-ventas-page.component";
 import { ReporteComprasPageComponent } from "./pages/reporte-compras-page/reporte-compras-page.component";
-import { ReportePagosClientePageComponent } from "./pages/Reporte-pagos-cliente-page/Reporte-pagos-cliente-page.component";
+import { ReportePagosClientePageComponent } from "./pages/reporte-pagos-cliente-page/reporte-pagos-cliente-page.component";
 
 export const adminDashboardRoutes: Routes = [{
 
