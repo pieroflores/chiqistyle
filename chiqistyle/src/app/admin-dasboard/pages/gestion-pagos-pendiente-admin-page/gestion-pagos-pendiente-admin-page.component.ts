@@ -33,6 +33,7 @@ export class GestionPagosPendienteAdminPageComponent implements OnInit {
   detalleVenta: any[] = [];
   pagosVenta: any[] = [];
   totalDeudaCliente: number = 0;
+   private apiSubUrl = `${environment.apiUrl}/comprobantes/`;
 
   // ─── Estados UI ───────────────────────────────────────────────
   cargando = true;
@@ -536,11 +537,30 @@ reader.readAsDataURL(archivo);
   // UTILIDADES
   // =============================================================
 
-  obtenerRutaComprobante(ruta: string): string {
+  // obtenerRutaComprobante(ruta: string): string {
+  //   if (!ruta || ruta.trim() === '') return '';
+  //   if (ruta.startsWith('http')) return ruta;
+  //   let rutaImage = environment.apiUrl +'comprobantes/'
+  //   //piero
+  //   const host = `${this.apiSubUrl}`.replace(/\/api$/, '');
+  //   console.log(host)
+  //   return `${host}${ruta}`;
+  // }
+ obtenerRutaComprobante(ruta: string): string {
     if (!ruta || ruta.trim() === '') return '';
     if (ruta.startsWith('http')) return ruta;
-    const host = environment.apiUrl.replace(/\/api$/, '');
-    return `${host}${ruta}`;
+
+    // 1. Sacamos el dominio limpio (http://localhost:7038)
+    const dominio = environment.apiUrl.replace(/\/api\/?$/i, '');
+
+    // 2. Extraemos SOLO el nombre de la imagen (por si la BD te manda "/comprobantes/imagen.png")
+    const nombreArchivo = ruta.split('/').pop();
+
+    // 3. Armamos la ruta obligando a que quede exactamente como quieres
+    const urlFinal = `${dominio}/comprobantes/${nombreArchivo}`;
+
+    console.log('URL limpia generada:', urlFinal);
+    return urlFinal;
   }
 
   obtenerListaComprobantes(comprobante: string): string[] {

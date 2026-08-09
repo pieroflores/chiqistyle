@@ -6,7 +6,7 @@
     "baseUrl": "./",
     "paths": {
 
-      "@auth/*": ["./src/app/auth/*"],
+      "@auth/*": ["./src/app/features/auth/*"],
       "@dashboard/*": ["./src/app/dashboard/*"],
       "@products/*": ["./src/app/products/*"],
       "@shared/*": ["./src/app/shared/*"],
