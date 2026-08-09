@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { CompraEnviar, CompraProductoEnviar, DatosComboCompra } from '@products/interfaces/compra.interface';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({providedIn: 'root'})
 export class CompraService {
 
     private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:7038/api/Compra'; // cambia por tu endpoint real
+  private apiUrl = `${environment.apiUrl}/Compra`; // cambia por tu endpoint real
 
 
 

@@ -1,200 +1,376 @@
 <div class="p-6 bg-white min-h-screen shadow-lg rounded-lg">
 
-  <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Productos y Variantes</h2>
-
-  <div role="tablist" class="tabs tabs-border">
-
-    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Visualizar Catálogo" checked />
-    <div role="tabpanel" class="tab-content bg-gray-100 p-6">
-      <div class="p-4 bg-white rounded-lg shadow">
-
-        <h3 class="text-xl font-semibold mb-4 text-gray-700">Catálogo de Productos Principales</h3>
-
-<div class="mb-4">
-          <input
-            type="text"
-            [(ngModel)]="textoBuscar"
-            placeholder="Buscar producto principal..."
-            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="min-w-full table-auto text-sm text-left">
-            <thead class="bg-gray-200">
-              <tr>
-                <th class="px-4 py-2">ID Producto</th>
-                <th class="px-4 py-2">Producto Principal</th>
-                <th class="px-4 py-2">Foto</th>
-                <th class="px-4 py-2 text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let t of filtrarproductos" class="border-b hover:bg-gray-50">
-                <td class="px-4 py-2">{{ t.idProductoPrincipal }}</td>
-                <td class="px-4 py-2">{{ t.nombreProducto }}</td>
-                <td class="px-4 py-2">
-                  <img [src]="'http://localhost:7038' + t.fotoProducto"
-                       alt="Foto producto"
-                       class="w-16 h-16 object-cover rounded" />
-                </td>
-                <td class="px-4 py-2 text-center space-x-2">
-                  <button (click)="verSubProducto(t)" class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-600 transition-colors">
-                    Ver Subproductos
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        </div>
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Administrar Productos y Variantes</h2>
+      <p class="page-subtitle">Gestiona tu catálogo, crea productos y configura sus variantes</p>
     </div>
+  </div>
 
-    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Crear Productos" />
-    <div role="tabpanel" class="tab-content bg-gray-100 p-6">
-      <div class="p-4 bg-white rounded-lg shadow">
+  <div role="tablist" class="tabs-custom">
+    <button type="button" class="tab-custom" [class.tab-custom-active]="tabActivo === 'catalogo'" (click)="tabActivo = 'catalogo'">
+      <i class="fa-solid fa-boxes-stacked"></i>
+      Visualizar Catálogo
+    </button>
+    <button type="button" class="tab-custom" [class.tab-custom-active]="tabActivo === 'crear'" (click)="tabActivo = 'crear'">
+      <i class="fa-solid fa-circle-plus"></i>
+      Crear Productos
+    </button>
+  </div>
 
-        <div class="bg-white rounded-lg p-4 mb-6">
-          <h3 class="text-xl font-semibold mb-4 text-gray-700">Crear Producto Principal</h3>
-          <form #form="ngForm" class="space-y-4" (ngSubmit)="onSubmit(form)">
-            <div>
-              <label for="nombreProducto" class="block text-sm font-medium text-gray-700">Nombre del Producto</label>
-              <input type="text" id="nombreProducto" name="nombreProducto" [(ngModel)]="producto.nombreProducto" class="mt-1 block w-full px-3 py-2 border rounded-md">
+  <!-- ============ PANEL: VISUALIZAR CATÁLOGO ============ -->
+  <div *ngIf="tabActivo === 'catalogo'" class="tab-panel animate-fade-in">
+    <div class="catalogo-card">
+
+  <div class="catalogo-header">
+    <div>
+      <h3 class="catalogo-titulo">Catálogo de Productos Principales</h3>
+      <p class="catalogo-contador">{{ filtrarproductos.length }} producto{{ filtrarproductos.length === 1 ? '' : 's' }}</p>
+    </div>
+  </div>
+
+  <div class="buscador-wrapper">
+    <i class="fa-solid fa-magnifying-glass buscador-icono"></i>
+    <input
+      type="text"
+      [(ngModel)]="textoBuscar"
+      placeholder="Buscar producto principal..."
+      class="buscador-input"
+    >
+  </div>
+
+  <div class="tabla-wrapper">
+    <table class="tabla-productos">
+      <thead>
+        <tr>
+          <th class="col-id">ID</th>
+          <th class="col-foto">Foto</th>
+          <th>Producto Principal</th>
+          <th class="col-acciones">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of filtrarproductos" class="fila-producto">
+          <td class="col-id">
+            <span class="badge-id">#{{ t.idProductoPrincipal }}</span>
+          </td>
+          <td class="col-foto">
+            <div class="foto-wrapper">
+              <img *ngIf="t.fotoProducto" [src]="apiHost + t.fotoProducto" alt="Foto producto" />
+              <i *ngIf="!t.fotoProducto" class="fa-solid fa-image"></i>
             </div>
-            <div>
-              <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
-              <select id="categoria" name="categoria" [(ngModel)]="producto.idCategoria" class="mt-1 block w-full px-3 py-2 border rounded-md">
-                <option value="null">Selecciona una categoría</option>
-                <option *ngFor="let c of categorias" [value]="c.idCategoria">
-                  {{ c.nombreCategoria }}
-                </option>
-              </select>
-            </div>
-            <div>
-              <label for="proveedor" class="block text-sm font-medium text-gray-700">Proveedor</label>
-              <select id="proveedor" name="proveedor" [(ngModel)]="producto.idProveedor" class="mt-1 block w-full px-3 py-2 border rounded-md">
-                <option [ngValue]="null">Seleccione el proveedor</option>
-                <option *ngFor="let c of proveedores" [ngValue]="c.idProveedor">
-                  {{ c.nombreProveedor }}
-                </option>
-              </select>
-            </div>
-            <div>
-              <label for="fotoProducto" class="block text-sm font-medium text-gray-700 mb-1">
-                Foto del Producto
-              </label>
+          </td>
+          <td class="nombre-producto">{{ t.nombreProducto }}</td>
+          <td class="col-acciones">
+            <button (click)="verSubProducto(t)" class="btn-ver-variantes">
+              <i class="fa-solid fa-layer-group mr-1"></i>
+              Ver Subproductos
+            </button>
+          </td>
+        </tr>
 
-              <div class="mt-2 flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-200"
-                   [ngClass]="previewUrl ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-blue-400'"
-                   (click)="fileInput.click()"
-                   (paste)="onPasteImage($event)">
+        <tr *ngIf="filtrarproductos.length === 0">
+          <td colspan="4" class="sin-resultados">
+            <i class="fa-solid fa-box-open text-2xl mb-2"></i>
+            <p>No se encontraron productos</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-                <div *ngIf="!previewUrl" class="text-center text-gray-500 text-sm">
-                  <i class="fa-solid fa-image text-3xl mb-2"></i><br />
-                  <p>Pega (Ctrl + V) o haz clic para seleccionar una imagen</p>
-                </div>
+</div>
+  </div>
 
-                <div *ngIf="previewUrl" class="relative">
-                  <img [src]="previewUrl" alt="Vista previa del producto" class="w-40 h-40 object-cover rounded-md shadow-md border" />
-                  <button type="button" class="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-                          (click)="eliminarImagen($event)">
-                    ✕
-                  </button>
-                </div>
+  <!-- ============ PANEL: CREAR PRODUCTOS ============ -->
+  <div *ngIf="tabActivo === 'crear'" class="tab-panel animate-fade-in">
+    <!-- 👇 aquí va tu contenido actual de "Crear Producto Principal" + "Crear Variantes" -->
+    <div class="form-card">
 
-                <input type="file" #fileInput id="fotoProducto" name="fotoProducto" accept="image/*" (change)="onFileSelected($event)" hidden />
-              </div>
-            </div>
-
-            <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md">Guardar Producto Principal</button>
-          </form>
-        </div>
-
-        <div class="bg-white rounded-lg p-4">
-          <h3 class="text-xl font-semibold mb-4 text-gray-700">Crear Subproducto (Variante)</h3>
-          <form #formSub="ngForm" class="space-y-4" (ngSubmit)="onSubmitSub(formSub)">
-            <div class="relative z-50">
-              <label for="productoPrincipal" class="block text-sm font-medium text-gray-700">Producto Principal</label>
-              <ng-select [(ngModel)]="subProducto.idProductoPrincipal"
-                         [items]="productoPrincipal"
-                         bindLabel="nombreProducto"
-                         bindValue="idProductoPrincipal"
-                         placeholder="Selecciona o busca un Producto"
-                         [searchable]="true"
-                         [clearable]="true"
-                         class="mt-1 block w-full"
-                         name="idProductoPrincipal"
-                         [ngClass]="{'has-value': subProducto.idProductoPrincipal}">
-              </ng-select>
-            </div>
-
-            <div class="relative">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Colores</label>
-              <button type="button" (click)="mostrarColores = !mostrarColores"
-                      class="w-full flex justify-between items-center border rounded-md px-3 py-2 bg-white shadow-sm">
-                <span>{{ obtenerTextoColoresSeleccionados() }}</span>
-                ▼
-              </button>
-
-              <div *ngIf="mostrarColores" class="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-56 overflow-y-auto">
-                <div *ngFor="let c of color" class="px-3 py-2 flex items-center hover:bg-gray-100">
-                  <input type="checkbox" [checked]="subProducto.idColores.includes(c.idColor)" (change)="toggleColorSeleccionado(c.idColor)" class="mr-2" />
-                  <span>{{ c.nombreColor }}</span>
-                </div>
-                <div class="p-2 border-t bg-gray-50 text-center">
-                  <button type="button" (click)="abrirModalColor()" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">
-                    ➕ Agregar nuevo color
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="relative">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Tallas</label>
-              <button type="button" (click)="mostrarTallas = !mostrarTallas"
-                      class="w-full flex justify-between items-center border rounded-md px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-                <span class="text-gray-700">{{ obtenerTextoTallasSeleccionadas() }}</span>
-                <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              <div *ngIf="mostrarTallas" class="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-56 overflow-y-auto">
-                <div *ngFor="let t of talla" class="px-3 py-2 flex items-center hover:bg-gray-100">
-                  <input type="checkbox" [checked]="subProducto.idTallas.includes(t.idTalla)" (change)="toggleTallaSeleccionada(t.idTalla)" class="mr-2" />
-                  <span class="text-gray-700">{{ t.nombreTalla }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label for="precioCompra" class="block text-sm font-medium text-gray-700">Precio de Compra</label>
-                <input type="number" id="precioCompra" [(ngModel)]="subProducto.precioCompra" step="0.01" name="precioCompra" class="mt-1 block w-full px-3 py-2 border rounded-md">
-              </div>
-              <div>
-                <label for="precioVenta" class="block text-sm font-medium text-gray-700">Precio de Venta</label>
-                <input type="number" id="precioVenta" [(ngModel)]="subProducto.precioVenta" step="0.01" name="precioVenta" class="mt-1 block w-full px-3 py-2 border rounded-md">
-              </div>
-              <div>
-                <label for="precioVentaPorMayor" class="block text-sm font-medium text-gray-700">Precio Venta x Mayor</label>
-                <input type="number" id="precioVentaPorMayor" [(ngModel)]="subProducto.precioVentaPorMayor" step="0.01" name="precioVentaPorMayor" class="mt-1 block w-full px-3 py-2 border rounded-md">
-              </div>
-              <div>
-                <label for="precioVentaLiquidacion" class="block text-sm font-medium text-gray-700">Precio Venta x Liquidación</label>
-                <input type="number" id="precioVentaLiquidacion" [(ngModel)]="subProducto.precioVentaLiquidacion" step="0.01" name="precioVentaLiquidacion" class="mt-1 block w-full px-3 py-2 border rounded-md">
-              </div>
-            </div>
-
-            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md">Agregar Subproducto</button>
-          </form>
-        </div>
-
+  <div class="form-card-header form-card-header-clickable" (click)="toggleFormProducto()">
+    <div class="form-card-header-left">
+      <div class="form-card-icon">
+        <i class="fa-solid fa-box"></i>
+      </div>
+      <div>
+        <h3 class="form-card-titulo">Crear Producto Principal</h3>
+        <p class="form-card-subtitulo">Registra la información base del producto</p>
       </div>
     </div>
 
+    <button type="button" class="form-card-toggle">
+      <i class="fa-solid" [ngClass]="mostrarFormProducto ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+    </button>
   </div>
+
+  <div *ngIf="mostrarFormProducto" class="animate-fade-in">
+    <form #form="ngForm" (ngSubmit)="onSubmit(form)">
+
+      <div class="form-grid">
+
+        <div class="campo-form">
+          <label for="nombreProducto">Nombre del Producto</label>
+          <input type="text" id="nombreProducto" name="nombreProducto"
+                 [(ngModel)]="producto.nombreProducto"
+                 placeholder="Ej. Jean Cargo Hombre"
+                 class="input-form">
+        </div>
+
+        <div class="campo-form">
+          <label for="categoria">Categoría</label>
+          <select id="categoria" name="categoria" [(ngModel)]="producto.idCategoria" class="input-form">
+            <option value="null">Selecciona una categoría</option>
+            <option *ngFor="let c of categorias" [value]="c.idCategoria">{{ c.nombreCategoria }}</option>
+          </select>
+        </div>
+
+        <div class="campo-form">
+          <label for="proveedor">Proveedor</label>
+          <select id="proveedor" name="proveedor" [(ngModel)]="producto.idProveedor" class="input-form">
+            <option [ngValue]="null">Seleccione el proveedor</option>
+            <option *ngFor="let c of proveedores" [ngValue]="c.idProveedor">{{ c.nombreProveedor }}</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="campo-form mt-2">
+        <label>Foto del Producto</label>
+
+        <div class="dropzone"
+             [class.dropzone-activa]="previewUrl"
+             (click)="fileInput.click()"
+             (paste)="onPasteImage($event)">
+
+          <div *ngIf="!previewUrl" class="dropzone-vacio">
+            <div class="dropzone-icono">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <p class="dropzone-texto-principal">Pega una imagen o haz clic para seleccionar</p>
+            <p class="dropzone-texto-secundario">Ctrl + V para pegar desde el portapapeles · PNG, JPG</p>
+          </div>
+
+          <div *ngIf="previewUrl" class="dropzone-preview">
+            <img [src]="previewUrl" alt="Vista previa del producto" />
+            <button type="button" class="dropzone-eliminar" (click)="eliminarImagen($event)">
+              <i class="fa-solid fa-trash mr-1"></i> Quitar
+            </button>
+          </div>
+
+          <input type="file" #fileInput id="fotoProducto" name="fotoProducto" accept="image/*" (change)="onFileSelected($event)" hidden />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-guardar-producto">
+        <i class="fa-solid fa-floppy-disk mr-2"></i>
+        Guardar Producto Principal
+      </button>
+
+    </form>
+  </div>
+
+</div>
+
+<!-- ============ CREAR VARIANTES (STEPPER) ============ -->
+     <div class="bg-white rounded-lg p-4 mt-6">
+
+       <div class="variant-header">
+         <div>
+           <h2>Crear Variantes</h2>
+           <p>Configura colores, tallas y precios en tres sencillos pasos.</p>
+         </div>
+         <div class="variant-icon">
+           <i class="fa-solid fa-layer-group"></i>
+         </div>
+       </div>
+
+       <!-- STEPPER -->
+       <div class="variant-steps">
+         <div class="step" [class.active]="pasoActual === 1" [class.done]="pasoActual > 1" (click)="irAPaso(1)">
+           <div class="circle"><i *ngIf="pasoActual > 1" class="fa-solid fa-check"></i><span *ngIf="pasoActual <= 1">1</span></div>
+           <span>Producto</span>
+         </div>
+
+         <div class="line" [class.done]="pasoActual > 1"></div>
+
+         <div class="step" [class.active]="pasoActual === 2" [class.done]="pasoActual > 2" (click)="irAPaso(2)">
+           <div class="circle"><i *ngIf="pasoActual > 2" class="fa-solid fa-check"></i><span *ngIf="pasoActual <= 2">2</span></div>
+           <span>Variantes</span>
+         </div>
+
+         <div class="line" [class.done]="pasoActual > 2"></div>
+
+         <div class="step" [class.active]="pasoActual === 3" (click)="irAPaso(3)">
+           <div class="circle">3</div>
+           <span>Precios</span>
+         </div>
+       </div>
+
+       <!-- BARRA DE PRODUCTO SELECCIONADO (visible en pasos 2 y 3) -->
+       <div *ngIf="pasoActual > 1 && productoSeleccionadoVariante" class="producto-activo-bar">
+         <div class="producto-activo-foto">
+           <img *ngIf="productoSeleccionadoVariante.fotoProducto"
+             [src]="apiHost + productoSeleccionadoVariante.fotoProducto"
+                alt="Foto producto">
+           <i *ngIf="!productoSeleccionadoVariante.fotoProducto" class="fa-solid fa-image"></i>
+         </div>
+
+         <div class="producto-activo-info">
+           <span class="producto-activo-label">Registrando variantes para</span>
+           <span class="producto-activo-nombre">{{ productoSeleccionadoVariante.nombreProducto }}</span>
+         </div>
+
+         <button type="button" class="producto-activo-cambiar" (click)="irAPaso(1)">
+           <i class="fa-solid fa-pen mr-1"></i> Cambiar
+         </button>
+       </div>
+
+       <form #formSub="ngForm" (ngSubmit)="onSubmitSub(formSub)">
+
+         <!-- ================= PASO 1: PRODUCTO ================= -->
+         <div *ngIf="pasoActual === 1" class="animate-slide-left paso-contenido paso-centrado">
+
+           <div class="campo-form">
+             <label>Producto Principal</label>
+
+             <ng-select [(ngModel)]="subProducto.idProductoPrincipal"
+                        [items]="productoPrincipal"
+                        bindLabel="nombreProducto"
+                        bindValue="idProductoPrincipal"
+                        placeholder="🔍 Busca un producto..."
+                        [searchable]="true"
+                        [clearable]="true"
+                        name="idProductoPrincipal"
+                        (change)="onCambioProducto()"
+                        class="ng-select-form">
+             </ng-select>
+
+             <p class="campo-ayuda">Elige el producto sobre el cual quieres registrar nuevas variantes</p>
+           </div>
+
+           <div class="paso-acciones justify-end">
+             <button type="button" class="btn-continuar" [disabled]="!subProducto.idProductoPrincipal" (click)="siguientePaso()">
+               Continuar <i class="fa-solid fa-arrow-right ml-1"></i>
+             </button>
+           </div>
+         </div>
+
+         <!-- ================= PASO 2: COLORES + TALLAS ================= -->
+         <div *ngIf="pasoActual === 2" class="animate-slide-left paso-contenido">
+
+           <!-- COLORES -->
+           <div class="mb-6">
+             <label class="block text-sm font-medium text-gray-700 mb-2">Colores</label>
+
+             <input type="text" [(ngModel)]="textoBuscarColor" [ngModelOptions]="{standalone:true}"
+                    placeholder="🔍 Buscar color..." class="w-full border rounded-md px-3 py-2 text-sm mb-3">
+
+             <div class="chip-grid">
+               <button type="button" *ngFor="let c of coloresFiltrados"
+                       class="chip" [class.chip-selected]="subProducto.idColores.includes(c.idColor)"
+                       (click)="toggleColorSeleccionado(c.idColor)">
+                 <i class="fa-solid fa-check chip-check" *ngIf="subProducto.idColores.includes(c.idColor)"></i>
+                 {{ c.nombreColor }}
+               </button>
+
+               <button type="button" class="chip chip-nuevo" (click)="abrirModalColor()">
+                 <i class="fa-solid fa-plus mr-1"></i> Nuevo color
+               </button>
+             </div>
+           </div>
+
+           <!-- TALLAS -->
+          <div class="mb-6">
+  <label class="block text-sm font-medium text-gray-700 mb-2">Tallas</label>
+
+  <input type="text" [(ngModel)]="textoBuscarTalla" [ngModelOptions]="{standalone:true}"
+         placeholder="🔍 Buscar talla..." class="w-full border rounded-md px-3 py-2 text-sm mb-3">
+
+  <div class="card-grid">
+    <div *ngFor="let t of tallasFiltradas"
+         class="talla-card"
+         [class.talla-card-selected]="estaTallaSeleccionada(t.idTalla)"
+         [class.talla-card-configurada]="tallaConfigurada(t.idTalla)"
+         (click)="toggleTallaCard(t.idTalla)">
+
+      <span class="talla-nombre">{{ t.nombreTalla }}</span>
+
+      <i *ngIf="tallaConfigurada(t.idTalla)" class="fa-solid fa-circle-check talla-badge"></i>
+      <i *ngIf="estaTallaSeleccionada(t.idTalla) && !tallaConfigurada(t.idTalla)"
+         class="fa-solid fa-gear talla-badge talla-badge-pendiente"
+         title="Falta configurar medidas"></i>
+    </div>
+
+    <!-- 👇 NUEVA TARJETA -->
+    <div class="talla-card talla-card-nueva" (click)="abrirModalTalla()">
+      <i class="fa-solid fa-plus"></i>
+      <span class="talla-nombre">Nueva</span>
+    </div>
+  </div>
+</div>
+
+           <!-- VISTA PREVIA -->
+           <div class="preview-box" *ngIf="subProducto.idColores.length && subProducto.idTallas.length">
+             <h4><i class="fa-solid fa-eye mr-1"></i> Vista previa</h4>
+             <div class="preview-grupo" *ngFor="let colorId of subProducto.idColores">
+               <span class="preview-color">{{ colorNombre(colorId) }}</span>
+               <span class="preview-talla" *ngFor="let t of subProducto.idTallas">
+                 ✓ {{ obtenerNombreTalla(t.idTalla) }}
+               </span>
+             </div>
+             <div class="preview-total">Total: <strong>{{ totalVariantes }}</strong> variantes</div>
+           </div>
+
+           <div class="paso-acciones justify-between">
+             <button type="button" class="btn-volver" (click)="pasoAnterior()">
+               <i class="fa-solid fa-arrow-left mr-1"></i> Atrás
+             </button>
+             <button type="button" class="btn-continuar"
+                     [disabled]="!subProducto.idColores.length || !subProducto.idTallas.length"
+                     (click)="siguientePaso()">
+               Continuar <i class="fa-solid fa-arrow-right ml-1"></i>
+             </button>
+           </div>
+         </div>
+
+         <!-- ================= PASO 3: PRECIOS ================= -->
+         <div *ngIf="pasoActual === 3" class="animate-slide-left paso-contenido">
+
+           <div class="grid grid-cols-2 gap-4 mb-6">
+             <div>
+               <label class="block text-sm font-medium text-gray-700">Precio de Compra</label>
+               <input type="number" [(ngModel)]="subProducto.precioCompra" step="0.01" name="precioCompra" class="mt-1 block w-full px-3 py-2 border rounded-md">
+             </div>
+             <div>
+               <label class="block text-sm font-medium text-gray-700">Precio de Venta</label>
+               <input type="number" [(ngModel)]="subProducto.precioVenta" step="0.01" name="precioVenta" class="mt-1 block w-full px-3 py-2 border rounded-md">
+             </div>
+             <div>
+               <label class="block text-sm font-medium text-gray-700">Precio Venta x Mayor</label>
+               <input type="number" [(ngModel)]="subProducto.precioVentaPorMayor" step="0.01" name="precioVentaPorMayor" class="mt-1 block w-full px-3 py-2 border rounded-md">
+             </div>
+             <div>
+               <label class="block text-sm font-medium text-gray-700">Precio Venta x Liquidación</label>
+               <input type="number" [(ngModel)]="subProducto.precioVentaLiquidacion" step="0.01" name="precioVentaLiquidacion" class="mt-1 block w-full px-3 py-2 border rounded-md">
+             </div>
+           </div>
+
+           <div class="paso-acciones justify-between">
+             <button type="button" class="btn-volver" (click)="pasoAnterior()">
+               <i class="fa-solid fa-arrow-left mr-1"></i> Atrás
+             </button>
+             <button type="submit" class="btn-crear">
+               <i class="fa-solid fa-plus mr-1"></i> Crear {{ totalVariantes }} variante{{ totalVariantes === 1 ? '' : 's' }}
+             </button>
+           </div>
+         </div>
+
+       </form>
+     </div>
+
+
+  </div>
+
 </div>
 
 <div *ngIf="mostrarModalColor" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
@@ -214,72 +390,211 @@
     </div>
   </div>
 </div>
+<div *ngIf="mostrarModalTalla" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+  <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+    <h3 class="text-lg font-bold mb-4">Registrar nueva talla</h3>
 
-<div *ngIf="visualizarSubProducto" class="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-[9999]">
+    <div class="mb-3">
+      <label class="text-sm">Nombre de la talla</label>
+      <input type="text"
+             [(ngModel)]="nuevaTalla.nombreTalla"
+             (input)="actualizarAbreviaturaTalla()"
+             class="w-full border px-3 py-2 rounded mt-1"
+             placeholder="Ejemplo: Extra Small">
+    </div>
 
-  <div class="bg-white rounded-lg shadow-2xl w-11/12 md:w-3/4 lg:w-2/3 max-h-[90vh] flex flex-col relative overflow-hidden">
+    <div class="mb-4">
+      <label class="text-sm">Abreviatura</label>
+      <input type="text"
+             [(ngModel)]="nuevaTalla.abreviatura"
+             readonly
+             class="w-full border px-3 py-2 rounded mt-1"
+             placeholder="Ejemplo: EXT">
+    </div>
 
-    <div class="flex justify-between items-start p-5 border-b bg-gray-50 rounded-t-lg">
-      <div class="flex items-center gap-4">
-        <div class="w-16 h-16 bg-white rounded-md shadow-sm border flex items-center justify-center overflow-hidden flex-shrink-0">
+    <div class="flex justify-end gap-2">
+      <button (click)="cerrarModalTalla()" class="px-3 py-1 bg-gray-400 text-white rounded">Cancelar</button>
+      <button (click)="guardarNuevaTalla()" class="px-3 py-1 bg-green-600 text-white rounded">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="visualizarSubProducto" class="modal-overlay">
+  <div class="modal-subproducto">
+
+    <!-- HEADER -->
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-foto">
           <img *ngIf="productoSeleccionado?.fotoProducto"
-               [src]="'http://localhost:7038' + productoSeleccionado?.fotoProducto"
-               alt="Foto producto"
-               class="w-full h-full object-cover" />
-          <i *ngIf="!productoSeleccionado?.fotoProducto" class="fa-solid fa-image text-gray-300 text-2xl"></i>
+            [src]="apiHost + productoSeleccionado?.fotoProducto"
+               alt="Foto producto" />
+          <i *ngIf="!productoSeleccionado?.fotoProducto" class="fa-solid fa-image"></i>
         </div>
 
         <div>
-          <h3 class="text-xl font-bold text-gray-800">Variantes del Producto</h3>
-          <p class="text-sm text-gray-600 font-medium mt-1">
-            <span class="text-blue-600">#{{ productoSeleccionado?.idProductoPrincipal }}</span> - {{ productoSeleccionado?.nombreProducto }}
-          </p>
+          <h3 class="modal-nombre">{{ productoSeleccionado?.nombreProducto }}</h3>
+          <span class="modal-badge-id">#{{ productoSeleccionado?.idProductoPrincipal }}</span>
+          <span class="modal-contador">{{ subProductos.length }} variante{{ subProductos.length === 1 ? '' : 's' }}</span>
         </div>
       </div>
 
-      <button (click)="cerrarModalSubProducto()" class="text-gray-400 hover:text-red-500 text-3xl font-bold leading-none transition-colors ml-4">
-        &times;
+      <button (click)="cerrarModalSubProducto()" class="modal-cerrar-x">
+        <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
 
-    <div class="p-0 overflow-y-auto">
-      <table class="min-w-full table-auto text-sm text-left">
-        <thead class="bg-gray-200 sticky top-0 z-10 shadow-sm">
-          <tr>
-            <th class="px-5 py-3 font-semibold text-gray-700">ID Variant</th>
-            <th class="px-5 py-3 font-semibold text-gray-700">Color</th>
-            <th class="px-5 py-3 font-semibold text-gray-700">Talla</th>
-            <th class="px-5 py-3 font-semibold text-gray-700">P. Compra</th>
-            <th class="px-5 py-3 font-semibold text-gray-700">P. Venta</th>
-            <th class="px-5 py-3 font-semibold text-gray-700">Venta x Mayor</th>
-            <th class="px-5 py-3 font-semibold text-gray-700">Liquidación</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b hover:bg-blue-50 transition-colors" *ngFor="let sub of subProductos">
-            <td class="px-5 py-3">{{ sub.idSubProducto }}</td>
-            <td class="px-5 py-3 font-medium">{{ sub.nombreColor }}</td>
-            <td class="px-5 py-3 font-medium">{{ sub.nombreTalla }}</td>
-            <td class="px-5 py-3">{{ sub.precioCompra }}</td>
-            <td class="px-5 py-3">{{ sub.precioVenta }}</td>
-            <td class="px-5 py-3">{{ sub.precioVentaPorMayor }}</td>
-            <td class="px-5 py-3 text-red-600 font-medium">{{ sub.precioVentaLiquidacion }}</td>
-          </tr>
+    <!-- CONTENIDO -->
+    <div class="modal-body">
 
-          <tr *ngIf="subProductos.length === 0">
-            <td colspan="7" class="px-5 py-8 text-center text-gray-500">
-              <p class="font-medium">No se encontraron subproductos registrados para este artículo.</p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- TABLA -->
+      <div class="modal-tabla-wrapper" [ngClass]="mostrarDrawerEditar ? 'w-[65%]' : 'w-full'">
+        <table class="tabla-variantes">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Color</th>
+              <th>Talla</th>
+              <th>Compra</th>
+              <th>Venta</th>
+              <th>Mayor</th>
+              <th>Liquidación</th>
+              <th>Largo (cm)</th>
+              <th>Entrepierna (cm)</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let sub of subProductos" class="fila-variante" [class.fila-activa]="editarSubProducto.idSubProducto === sub.idSubProducto">
+              <td class="text-gray-400 text-xs">{{ sub.idSubProducto }}</td>
+              <td><span class="chip-tabla chip-color">{{ sub.nombreColor }}</span></td>
+              <td><span class="chip-tabla chip-talla">{{ sub.nombreTalla }}</span></td>
+              <td>S/. {{ sub.precioCompra }}</td>
+              <td>S/. {{ sub.precioVenta }}</td>
+              <td>S/. {{ sub.precioVentaPorMayor }}</td>
+              <td class="text-red-600 font-semibold">S/. {{ sub.precioVentaLiquidacion }}</td>
+              <td>{{ sub.largoPantalon }}</td>
+              <td>{{ sub.entrepierna }}</td>
+              <td>
+                <div class="flex justify-center gap-2">
+                  <button (click)="abrirDrawerEditar(sub)" class="btn-icono btn-icono-editar" title="Editar">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button (click)="eliminarSubProducto(sub); $event.stopPropagation()" class="btn-icono btn-icono-eliminar" title="Eliminar">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="subProductos.length === 0">
+              <td colspan="10" class="sin-resultados">
+                <i class="fa-solid fa-shirt text-2xl mb-2"></i>
+                <p>No existen variantes registradas.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- DRAWER EDITAR -->
+      <div class="modal-drawer" [ngClass]="mostrarDrawerEditar ? 'w-[35%]' : 'w-0'">
+        <div *ngIf="mostrarDrawerEditar" class="drawer-contenido animate-slide-left">
+
+          <div class="drawer-header">
+            <h3>Editar Variante</h3>
+            <button (click)="cerrarDrawer()" class="drawer-cerrar">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="drawer-body">
+            <div class="drawer-campo">
+              <label>Color</label>
+              <select [(ngModel)]="editarSubProducto.idColor" class="drawer-input">
+                <option *ngFor="let c of color" [ngValue]="c.idColor">{{ c.nombreColor }}</option>
+              </select>
+            </div>
+
+            <div class="drawer-campo">
+              <label>Talla</label>
+              <select [(ngModel)]="editarSubProducto.idTalla" class="drawer-input">
+                <option *ngFor="let t of talla" [ngValue]="t.idTalla">{{ t.nombreTalla }}</option>
+              </select>
+            </div>
+
+            <div class="drawer-grid">
+              <div class="drawer-campo">
+                <label>Precio Compra</label>
+                <input type="number" [(ngModel)]="editarSubProducto.precioCompra" class="drawer-input">
+              </div>
+              <div class="drawer-campo">
+                <label>Precio Venta</label>
+                <input type="number" [(ngModel)]="editarSubProducto.precioVenta" class="drawer-input">
+              </div>
+              <div class="drawer-campo">
+                <label>Precio Mayor</label>
+                <input type="number" [(ngModel)]="editarSubProducto.precioVentaPorMayor" class="drawer-input">
+              </div>
+              <div class="drawer-campo">
+                <label>Liquidación</label>
+                <input type="number" [(ngModel)]="editarSubProducto.precioVentaLiquidacion" class="drawer-input">
+              </div>
+              <div class="drawer-campo">
+                <label>Largo pantalón (cm)</label>
+                <input type="number" step="0.1" [(ngModel)]="editarSubProducto.largoPantalon" class="drawer-input">
+              </div>
+              <div class="drawer-campo">
+                <label>Entrepierna (cm)</label>
+                <input type="number" step="0.1" [(ngModel)]="editarSubProducto.entrepierna" class="drawer-input">
+              </div>
+            </div>
+
+            <div class="drawer-acciones">
+              <button class="btn-drawer-guardar" (click)="guardarEdicionSubProducto()">
+                <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar
+              </button>
+              <button class="btn-drawer-cancelar" (click)="cerrarDrawer()">
+                Cancelar
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
 
-    <div class="p-4 border-t flex justify-end bg-gray-50">
-      <button (click)="cerrarModalSubProducto()" class="px-6 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 shadow-sm transition-all">
+    <!-- FOOTER -->
+    <div class="modal-footer">
+      <button (click)="cerrarModalSubProducto()" class="btn-modal-cerrar">
         Cerrar
       </button>
     </div>
 
+  </div>
+</div>
+<!-- DRAWER de configuración de talla -->
+<div *ngIf="mostrarDrawerTalla" class="fixed inset-0 z-50 flex justify-end bg-black/40">
+  <div class="w-96 bg-white h-full shadow-2xl p-6 animate-slide-left">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-lg font-bold">Talla {{ obtenerNombreTalla(tallaEnEdicion?.idTalla) }}</h3>
+      <button (click)="cerrarDrawerTalla()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <label class="text-sm font-medium">Largo pantalón (cm)</label>
+        <input type="number" [(ngModel)]="tallaEnEdicion.largoPantalon" [ngModelOptions]="{standalone:true}" class="input input-bordered w-full mt-1">
+      </div>
+      <div>
+        <label class="text-sm font-medium">Entrepierna (cm)</label>
+        <input type="number" [(ngModel)]="tallaEnEdicion.entrepierna" [ngModelOptions]="{standalone:true}" class="input input-bordered w-full mt-1">
+      </div>
+
+      <button class="btn btn-primary w-full mt-4" (click)="cerrarDrawerTalla()">
+        <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar
+      </button>
+    </div>
   </div>
 </div>

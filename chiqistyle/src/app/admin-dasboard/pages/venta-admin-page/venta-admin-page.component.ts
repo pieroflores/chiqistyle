@@ -3,7 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Cliente } from '@products/interfaces/cliente.interface';
-import { ProductoDisponibles } from '@products/interfaces/compra.interface';
+import { MetodoPago, ProductoDisponibles } from '@products/interfaces/compra.interface';
 import { ProductoVentaInfo as MConsultaProductoVenta, listprodMostrar, VentaEnviar, VentaProductoEnviar } from '@products/interfaces/venta.interface';
 import { ClienteService } from '@products/services/cliente.service';
 import { CompraService } from '@products/services/compra.service';
@@ -11,6 +11,7 @@ import { VentaService } from '@products/services/venta.service';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { environment } from '../../../../environments/environment';
 
 
 @Component({
@@ -21,6 +22,7 @@ import autoTable from 'jspdf-autotable';
   styleUrls: ['./venta-admin-page.component.scss']
 })
 export class VentaAdminPageComponent implements OnInit{
+  apiHost = environment.apiUrl.replace(/\/api$/, '');
   isDragging = false;
  
   // 🔹 PROPIEDADES DE PRECIOS
@@ -66,6 +68,7 @@ nuevoCliente: any = {
 };
 
 textoBusquedaCliente: string = '';
+metodosPago: MetodoPago[] = [];
 
   ngOnInit(): void {
      const userData = localStorage.getItem('usuario');
@@ -273,6 +276,7 @@ buscarProducto(term: string, item: ProductoDisponibles): boolean {
       next: (resp) => {
   console.log(resp)
         this.productoDisponibles = resp.productoDisponibles;
+this.metodosPago = resp.metodosPago;
       },
       error: (err) => {
         console.error('Error al cargar Combos:', err);
@@ -376,7 +380,7 @@ eliminarImagen(index: number) {
   this.previewUrls.splice(index, 1);
 
 }
-  agregarVenta(){
+  /*agregarVenta(){
     if (!this.VentaList.length) {
       Swal.fire('Atención', 'No hay productos en el pedido', 'warning');
       return;
@@ -386,7 +390,6 @@ eliminarImagen(index: number) {
       return;
     }
 
-    // Validación de campos de pago
     if (!this.tipoTransaccion || !this.montoPagado || !this.metodoPago || this.selectedFiles.length === 0){
       let faltantes: string[] = [];
       if (!this.tipoTransaccion) faltantes.push('Tipo de Transacción');
@@ -405,20 +408,19 @@ eliminarImagen(index: number) {
       return;
     }
 
-    // 🔹 Mapear la VentaList (visual) al formato de envío (VentaProductoEnviar)
     const detalleParaEnviar: VentaProductoEnviar[] = this.VentaList.map(item => ({
       idSubProducto: item.idSubProducto!,
       cantidad: item.cantidad,
       precioUnitario: item.precioUnitario,
       idAlmacen: item.idAlmacen!,
-      usaPrecioPorMayor: item.usaPrecioPorMayor! // 👈 Incluye el indicador
+      usaPrecioPorMayor: item.usaPrecioPorMayor!
     }));
 
     const nuevoEnviarServicio: VentaEnviar = {
       idCliente: this.idClienteSeleccionado!,
       fechaVenta: this.fechaventa!,
       idUsuario: this.idUsuario!,
-      detalle: detalleParaEnviar, // 👈 Usamos el detalle mapeado
+      detalle: detalleParaEnviar,
       montoPagado: this.montoPagado,
       metodoPago: this.metodoPago,
       comprobante: '',
@@ -426,7 +428,6 @@ eliminarImagen(index: number) {
     }
 
     if (this.selectedFiles.length > 0) {
-      // 🔹 1. Subir comprobante primero
       const uploads = this.selectedFiles.map(file =>
   this.ventaService.uploadComprobante(file).toPromise()
 );
@@ -445,20 +446,104 @@ Promise.all(uploads).then((results:any) => {
 
 });;
     } else {
-      // La validación anterior previene este camino, pero se mantiene la estructura.
+     
       this.enviarVenta(nuevoEnviarServicio);
     }
 
  if (
     this.tipoTransaccion === 'COMPLETA' &&
-    this.metodoPago !== 'YAPE TESMA' &&  this.metodoPago !== 'TRANSFERENCIA BCP TESMA'  &&  this.metodoPago !== 'PLIN TESMA' &&  this.metodoPago !== 'TRANSFERENCIA BBVA TESMA'
+    this.metodoPago !== 'YAPE TESMA' &&  this.metodoPago !== 'TRANSFERENCIA BCP TESMA'
+    &&  this.metodoPago !== 'PLIN TESMA' &&  this.metodoPago !== 'TRANSFERENCIA BBVA TESMA'
   ) {
     this.generarPDFComprobante();
   }
 
-  }
+  } */
+agregarVenta() {
+    if (!this.VentaList.length) {
+      Swal.fire('Atención', 'No hay productos en el pedido', 'warning');
+      return;
+    }
+    if (!this.idClienteSeleccionado || !this.fechaventa || !this.idUsuario) {
+      Swal.fire('Atención', 'Faltan datos del Cliente o Vendedor', 'warning');
+      return;
+    }
 
-generarPDFComprobante() {
+    // Validación de campos de pago
+    if (!this.tipoTransaccion || !this.montoPagado || !this.metodoPago || this.selectedFiles.length === 0){
+      let faltantes: string[] = [];
+      if (!this.tipoTransaccion) faltantes.push('Tipo de Transacción');
+      if (!this.montoPagado) faltantes.push('Monto Pagado / Adelanto');
+      if (!this.metodoPago) faltantes.push('Método de Pago');
+      if (this.selectedFiles.length === 0) faltantes.push('Foto del Comprobante');
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        html: `<b>Faltan completar los siguientes campos:</b><br><ul class="text-left mt-2">${faltantes
+          .map(f => `<li>• ${f}</li>`)
+          .join('')}</ul>`,
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    // 🔹 Mapear la VentaList (visual) al formato de envío (VentaProductoEnviar)
+    const detalleParaEnviar: VentaProductoEnviar[] = this.VentaList.map(item => ({
+      idSubProducto: item.idSubProducto!,
+      cantidad: item.cantidad,
+      precioUnitario: item.precioUnitario,
+      idAlmacen: item.idAlmacen!,
+      usaPrecioPorMayor: item.usaPrecioPorMayor! // 👈 Incluye el indicador
+    }));
+
+    const nuevoEnviarServicio: VentaEnviar = {
+      idCliente: this.idClienteSeleccionado!,
+      fechaVenta: this.fechaventa!,
+      idUsuario: this.idUsuario!,
+      detalle: detalleParaEnviar, // 👈 Usamos el detalle mapeado
+      montoPagado: this.montoPagado,
+      metodoPago: this.metodoPago,
+      comprobante: '',
+      tipoTransaccion: this.tipoTransaccion
+    };
+
+    // 👇 ESTA ES LA PARTE QUE SE REEMPLAZÓ 👇
+    if (this.selectedFiles.length > 0) {
+      const uploads = this.selectedFiles.map(file =>
+        this.ventaService.uploadComprobante(file).toPromise()
+      );
+
+      Promise.all(uploads).then((results:any) => {
+        const paths = results.map((r:any) => r.path);
+        nuevoEnviarServicio.comprobante = paths.join(',');
+        this.enviarVenta(nuevoEnviarServicio);
+      }).catch((err) => {
+        console.error("Error al subir imágenes:", err);
+        Swal.fire('❌ Error', 'No se pudieron subir los comprobantes', 'error');
+      });
+    } else {
+      this.enviarVenta(nuevoEnviarServicio);
+    }
+  }
+  // En el component.ts, agrega esta función
+private cargarImagenComoBase64(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx!.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+/*generarPDFComprobante() {
 
   const doc = new jsPDF();
 
@@ -487,6 +572,194 @@ generarPDFComprobante() {
   doc.text(`TOTAL: S/. ${this.totalVenta.toFixed(2)}`, 14, (doc as any).lastAutoTable.finalY + 10);
 
   doc.save(`comprobante_${Date.now()}.pdf`);
+}*/
+async  generarPDFComprobante(respBackend?: any, tipo: 'BOLETA' | 'NORMAL' = 'NORMAL') {
+  const doc = new jsPDF();
+  const data = respBackend || {};
+console.log('respBackend', respBackend);
+console.log('VentaList', this.VentaList);
+console.log('totalVenta', this.totalVenta);
+console.log('metodoPago', this.metodoPago);
+console.log('idClienteSeleccionado', this.idClienteSeleccionado);
+console.log('clientes', this.clientes);
+
+  if (tipo === 'BOLETA') {
+    const serie   = data.serie  || 'B001';
+    const numero  = data.numero || '00000000';
+    const hash    = data.hash   || '';
+    const idVenta = data.idVenta || 0;
+
+    const empresaNombre    = data.empresaNombre    || '';
+    const empresaRuc       = data.empresaRuc       || '';
+    const empresaDireccion = data.empresaDireccion || '';
+    const empresaEmail     = data.empresaEmail     || 'admin@gmail.com';
+
+    try {
+      const logoBase64 = await this.cargarImagenComoBase64('/img/logo.png');
+     doc.addImage(logoBase64, 'PNG', 14, 10, 28, 18);
+    } catch {
+      console.warn('No se pudo cargar el logo');
+    }
+    if (idVenta) {
+        try {
+        const qrBase64 = await this.cargarImagenComoBase64(
+          `${this.apiHost}/QR/${idVenta}.jpg`
+        );
+        doc.addImage(qrBase64, 'JPEG', 130, 180, 50, 50);
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Código Hash: ${hash}`, 130, 234);
+      } catch {
+        console.warn('No se pudo cargar el QR');
+        // Si no hay QR, solo poner el hash
+        if (hash) {
+          doc.setFontSize(7);
+          doc.text(`Código Hash: ${hash}`, 14, 234);
+        }
+      }
+    }
+    // CABECERA EMPRESA (izquierda)
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(empresaNombre, 46, 16);
+    //doc.text('CORPORACION TESMA S.A.C.', 46, 16);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`RUC ${empresaRuc}`, 46, 21);
+    //doc.text('RUC 20613314319', 46, 21);
+    doc.setFontSize(7.5);
+    doc.text(empresaDireccion, 46, 25);
+    doc.text(`Email: ${empresaEmail}`, 46, 29);
+    //doc.text('AV. SANTA ANA, MZ. A32, LTE. 39, SANTA ANITA, LIMA - LIMA', 46, 25);
+    //doc.text('Email: admin@gmail.com', 46, 29);
+
+    // CUADRO BOLETA (derecha)
+    doc.setDrawColor(0);
+    doc.rect(135, 10, 61, 23);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('BOLETA DE VENTA', 165.5, 16, { align: 'center' });
+    doc.text('ELECTRÓNICA', 165.5, 20, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text(`${serie}-${numero.padStart(8, '0')}`, 165.5, 28, { align: 'center' });
+
+    // LÍNEA SEPARADORA
+    doc.line(14, 40, 196, 40);
+
+    // DATOS DEL CLIENTE
+const clienteEncontrado = this.clientes.find(
+  c => Number(c.idCliente) === Number(this.idClienteSeleccionado)
+);
+
+console.log('clienteEncontrado', clienteEncontrado);
+
+const clienteNombre =
+  clienteEncontrado?.nombreCliente ||
+  this.VentaList[0]?.cliente ||
+  '';
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`FECHA DE EMISIÓN  : ${new Date(this.fechaventa!).toLocaleDateString()}`, 14, 52);
+    doc.text(`FECHA DE VENCIMIENTO  : ${new Date(this.fechaventa!).toLocaleDateString()}`, 14, 58);
+    console.log('clienteNombre', clienteNombre);
+    doc.text(`CLIENTE: ${clienteNombre}`, 14, 64);
+    doc.text(`VENDEDOR: ${this.nombreVendedor}`, 14, 70);
+
+    // TABLA DE PRODUCTOS
+    const body = this.VentaList.map(item => ([
+      item.idSubProducto?.toString() || '',
+      item.cantidad,
+      'NIU',
+      item.SubProducto,
+      `${item.precioUnitario.toFixed(2)}`,
+      '0',
+      `${(item.cantidad * item.precioUnitario).toFixed(2)}`
+    ]));
+console.log('body', body);
+    autoTable(doc, {
+      startY: 78,
+      head: [['COD.', 'CANT.', 'UNIDAD', 'DESCRIPCIÓN', 'P.UNIT', 'DTO.', 'TOTAL']],
+      body: body,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [41, 128, 185] }
+    });
+
+    const finalY = (doc as any).lastAutoTable.finalY;
+
+    // TOTALES
+    const subtotal = this.totalVenta / 1.18;
+    const igv      = this.totalVenta - subtotal;
+
+    doc.setFontSize(9);
+    doc.text(`OP. GRAVADAS: S/ ${subtotal.toFixed(2)}`,  196, finalY + 8,  { align: 'right' });
+    doc.text(`IGV: S/ ${igv.toFixed(2)}`,                196, finalY + 14, { align: 'right' });
+    doc.setFont('helvetica', 'bold');
+    doc.text(`TOTAL A PAGAR: S/ ${this.totalVenta.toFixed(2)}`, 196, finalY + 20, { align: 'right' });
+
+    // CONDICIÓN DE PAGO
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text(`CONDICIÓN DE PAGO: Contado`, 14, finalY + 30);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`PAGOS:`, 14, finalY + 36);
+    doc.text(`• ${this.metodoPago} - S/ ${this.totalVenta.toFixed(2)}`, 14, finalY + 42);
+
+    // VENDEDOR
+    doc.text(`Vendedor:`, 14, finalY + 52);
+    doc.setFont('helvetica', 'bold');
+    doc.text(this.nombreVendedor, 14, finalY + 58);
+
+    // QR (si existe en wwwroot/QR/)
+    // if (hash) {
+    //   doc.setFontSize(8);
+    //   doc.setFont('helvetica', 'normal');
+    //   doc.text(`Código Hash: ${hash}`, 130, finalY + 58);
+    // }
+
+    doc.save(`Boleta_${serie}-${numero}.pdf`);
+
+  } else {
+    // COMPROBANTE NORMAL (sin TESMA) - tu diseño actual
+    const idVenta = data.idVenta || '0000';
+    doc.setFontSize(14);
+    doc.text('COMPROBANTE DE VENTA', 105, 15, { align: 'center' });
+    doc.setFontSize(10);
+    doc.text(`Control Interno N°: ${idVenta}`, 105, 21, { align: 'center' });
+
+const clienteEncontrado = this.clientes.find(
+  c => Number(c.idCliente) === Number(this.idClienteSeleccionado)
+);
+
+console.log('clienteEncontrado', clienteEncontrado);
+
+const clienteNombre =
+  clienteEncontrado?.nombreCliente ||
+  this.VentaList[0]?.cliente ||
+  '';
+
+    doc.text(`Cliente: ${clienteNombre}`, 14, 30);
+    doc.text(`Fecha: ${new Date(this.fechaventa!).toLocaleDateString()}`, 14, 37);
+    doc.text(`Vendedor: ${this.nombreVendedor}`, 14, 44);
+    doc.text(`Método de Pago: ${this.metodoPago}`, 14, 51);
+
+    const body = this.VentaList.map(item => ([
+      item.SubProducto,
+      item.cantidad,
+      `S/. ${item.precioUnitario.toFixed(2)}`,
+      `S/. ${(item.cantidad * item.precioUnitario).toFixed(2)}`
+    ]));
+
+    autoTable(doc, {
+      startY: 60,
+      head: [['Producto', 'Cantidad', 'Precio Unit.', 'Subtotal']],
+      body: body
+    });
+
+    const finalY = (doc as any).lastAutoTable.finalY + 10;
+    doc.text(`TOTAL: S/. ${this.totalVenta.toFixed(2)}`, 14, finalY);
+    doc.save(`Comprobante_${idVenta}.pdf`);
+  }
 }
 guardarClienteRapido() {
 
@@ -617,7 +890,7 @@ cerrarModalCliente() {
   };
 }
 
-  private enviarVenta(ventaData: VentaEnviar) {
+/*  private enviarVenta(ventaData: VentaEnviar) {
     this.ventaService.registrarVenta(ventaData).subscribe({
       next: (resp) => {
         Swal.fire({
@@ -636,5 +909,41 @@ cerrarModalCliente() {
         Swal.fire('❌ Error', 'No se pudo registrar la venta', 'error');
       }
     });
-  }
+  } */
+private enviarVenta(ventaData: VentaEnviar) {
+  this.ventaService.registrarVenta(ventaData).subscribe({
+    next:async  (resp: any) => {
+
+      Swal.fire({
+        icon: 'success',
+        title: resp.mensaje || 'Venta registrada correctamente',
+        text: `N° de Venta: ${resp.idVenta}`,
+        timer: 2000,
+        showConfirmButton: true
+      });
+
+      // 🔹 VALIDACIÓN DEL TIPO DE COMPROBANTE
+      if (this.tipoTransaccion === 'COMPLETA') {
+        try {
+          if (resp.esElectronico) {
+            // Opción A: Es TESMA -> Enviamos los datos para la Boleta Electrónica
+            await  this.generarPDFComprobante(resp, 'BOLETA');
+          } else {
+            // Opción B: NO es TESMA -> Generamos un ticket interno normal
+            await  this.generarPDFComprobante(resp, 'NORMAL');
+          }
+        } catch (pdfError) {
+          console.error("Error al generar el PDF:", pdfError);
+        }
+      }
+
+      this.resetFormularioVenta();
+      this.cargarCombos();
+    },
+    error: (err) => {
+      console.error('Error:', err);
+      Swal.fire('❌ Error', 'Hubo un problema en el servidor', 'error');
+    }
+  });
+}
 }

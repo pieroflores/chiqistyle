@@ -1,6 +1,7 @@
 // src/app/services/color.service.ts (o donde tengas tus servicios)
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 
 export interface Color {
@@ -13,7 +14,7 @@ export interface Color {
   providedIn: 'root'
 })
 export class ColorService {
-  private apiUrl = 'http://localhost:7038/api'; // 🚨 VERIFICA TU PUERTO BASE
+  private apiUrl = environment.apiUrl; // 🚨 VERIFICA TU PUERTO BASE
 
   constructor(private http: HttpClient) {}
 

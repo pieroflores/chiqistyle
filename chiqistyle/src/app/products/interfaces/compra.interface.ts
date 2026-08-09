@@ -29,6 +29,7 @@ export interface DatosComboCompra {
   tiposDocumento: TipoDocumento[];
   productoDisponibles:ProductoDisponibles[]
   productoPrincipal: productoPrincipal[]
+  metodosPago: MetodoPago[];
 }
 
 export interface CompraEnviar {
@@ -66,4 +67,8 @@ export interface CompraProductoList {
   cantidad: number;
   precioUnitario: number;
   Almacen: string;
+}
+export interface MetodoPago {
+  idMetodoPago: number;
+  metodoPago: string;
 }

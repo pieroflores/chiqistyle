@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Talla } from '@products/interfaces/talla.interface';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({providedIn: 'root'})
 export class TallaService {
 
     private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:7038/api/talla/'; // cambia por tu endpoint real
+    private apiUrl = `${environment.apiUrl}/talla/`; // cambia por tu endpoint real
 
 
     AddTalla(talla: Talla): Observable<Talla> {

@@ -4,6 +4,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReporteService } from '@products/services/reporte.service';
 import { ClienteService } from '@products/services/cliente.service';
+import { environment } from '../../../../environments/environment';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { Cliente } from '@products/interfaces/cliente.interface';
@@ -125,8 +126,8 @@ obtenerListaComprobantes(comprobante: string): string[] {
   }
 
   obtenerRutaComprobante(ruta: string): string {
-    const baseUrl = 'http://localhost:7038'; // ✅ Base URL Correcta
-    return ruta ? `${baseUrl}${ruta}` : '#';
+    const host = environment.apiUrl.replace(/\/api$/, '');
+    return ruta ? `${host}${ruta}` : '#';
   }
 
   exportarExcel() {

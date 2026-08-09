@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { ClienteDeuda, VentaPendiente } from '@products/interfaces/venta.interface';
 import { VentaService } from '@products/services/venta.service';
@@ -538,7 +539,8 @@ reader.readAsDataURL(archivo);
   obtenerRutaComprobante(ruta: string): string {
     if (!ruta || ruta.trim() === '') return '';
     if (ruta.startsWith('http')) return ruta;
-    return `http://localhost:7038${ruta}`;
+    const host = environment.apiUrl.replace(/\/api$/, '');
+    return `${host}${ruta}`;
   }
 
   obtenerListaComprobantes(comprobante: string): string[] {

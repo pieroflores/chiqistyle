@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../environments/environment';
 import { StockItem, StockService } from '@products/services/stock.service';
 
 @Component({
@@ -58,13 +59,19 @@ cerrarModalDetalle() {
     return;
   }
 
-  // búsqueda exacta por talla
-  this.stockFiltrado = this.stock.filter(
-    (x) => x.talla.toLowerCase() === term
-  );
+// Búsqueda por Nombre de Producto o Talla
+    this.stockFiltrado = this.stock.filter((x) => {
+      // Nos aseguramos de que no sean nulos antes de convertirlos a minúsculas
+      const nombre = x.nombreProducto ? x.nombreProducto.toLowerCase() : '';
+      const talla = x.talla ? String(x.talla).toLowerCase() : '';
+
+      // Retorna true si el término de búsqueda está incluido en el nombre o en la talla
+      return nombre.includes(term) || talla.includes(term);
+    });
   }
 
   obtenerRutaFoto(ruta: string): string {
-    return ruta ? `http://localhost:7038${ruta}` : 'assets/no-image.png';
+    const host = environment.apiUrl.replace(/\/api$/, '');
+    return ruta ? `${host}${ruta}` : 'assets/no-image.png';
   }
  }

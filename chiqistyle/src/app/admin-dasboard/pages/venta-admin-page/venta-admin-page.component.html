@@ -105,11 +105,11 @@
 
   <div class="flex items-center gap-2">
 
-    <img
-      *ngIf="item.fotoProducto"
-      [src]="'http://localhost:7038' + item.fotoProducto"
-      class="w-8 h-8 rounded object-cover border"
-    >
+        <img
+            *ngIf="item.fotoProducto"
+            [src]="apiHost + item.fotoProducto"
+            class="w-8 h-8 rounded object-cover border"
+        >
 
     <span>
       {{ item.productoVariable }}
@@ -122,11 +122,11 @@
 
   <div class="flex items-center gap-3 py-1">
 
-    <img
-      *ngIf="item.fotoProducto"
-      [src]="'http://localhost:7038' + item.fotoProducto"
-      class="w-14 h-14 rounded-lg object-cover border shadow-sm"
-    >
+        <img
+            *ngIf="item.fotoProducto"
+            [src]="apiHost + item.fotoProducto"
+            class="w-14 h-14 rounded-lg object-cover border shadow-sm"
+        >
 
     <div class="flex flex-col">
 
@@ -292,18 +292,25 @@ class="mt-1 block w-full px-3 py-2 border rounded-md font-semibold text-red-600"
 
             <div>
                 <label for="metodoPago" class="block text-sm font-medium text-gray-700">Método de Pago</label>
-                <select
-                    id="metodoPago"
-                    name="metodoPago"
-                    [(ngModel)]="metodoPago"
-                    required
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-base"
-                >
-                    <option value="">Selecciona Método...</option>
-                    <option value="EFECTIVO">Efectivo</option>
-                    <option value="YAPE PIERO">Yape Piero</option>
-                    <option value="YAPE SANDRA">Yape Sandra</option>
-                </select>
+               <select
+    id="metodoPago"
+    name="metodoPago"
+    [(ngModel)]="metodoPago"
+    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+
+    <option value="">
+        Selecciona Método...
+    </option>
+
+    <option
+        *ngFor="let metodo of metodosPago"
+        [value]="metodo.metodoPago">
+
+        {{ metodo.metodoPago }}
+
+    </option>
+
+</select>
             </div>
 
             <div>

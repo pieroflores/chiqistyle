@@ -3,12 +3,13 @@ import { inject, Injectable } from '@angular/core';
 import { Cliente } from '@products/interfaces/cliente.interface';
 import { Proveedor } from '@products/interfaces/proveedor.interface';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({providedIn: 'root'})
 export class ProveedorService {
 
     private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:7038/api/proveedor/'; // cambia por tu endpoint real
+  private apiUrl = `${environment.apiUrl}/proveedor/`; // cambia por tu endpoint real
 
 
     AddProveedor(proveedor: Proveedor): Observable<Proveedor> {

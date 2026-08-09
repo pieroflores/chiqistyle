@@ -1,6 +1,7 @@
 // src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { Observable, tap } from 'rxjs';
  export interface UsuarioResponse {
   idUsuario: number;
@@ -9,11 +10,12 @@ import { Observable, tap } from 'rxjs';
   idRol: number;
   nombreRol: string;
   modulo: { nombreModulo: string }[];
+  token: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'http://localhost:7038/api/Login';
+  private apiUrl = `${environment.apiUrl}/Login`;
 
   constructor(private http: HttpClient) {}
 
@@ -28,6 +30,11 @@ export class AuthService {
   getUsuario(): UsuarioResponse | null {
     const data = localStorage.getItem('usuario');
     return data ? JSON.parse(data) : null;
+  }
+
+  getToken(): string | null {
+    const usuario = this.getUsuario();
+    return usuario?.token ?? null;
   }
 
   logout(): void {

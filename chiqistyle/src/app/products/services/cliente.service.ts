@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Cliente } from '@products/interfaces/cliente.interface';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({providedIn: 'root'})
 export class ClienteService {
 
     private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:7038/api/cliente/'; // cambia por tu endpoint real
+  private apiUrl = `${environment.apiUrl}/cliente/`; // cambia por tu endpoint real
 
 
     AddCliente(cliente: Cliente): Observable<Cliente> {

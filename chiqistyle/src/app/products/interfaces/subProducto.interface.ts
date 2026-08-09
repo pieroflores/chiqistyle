@@ -10,4 +10,7 @@ export interface SubProducto {
   codigoSubProducto?: string;
    nombreColor?: string;
   nombreTalla?: string;
+largoPantalon?: number;
+entrepierna?: number;
+
 }

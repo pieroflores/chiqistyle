@@ -7,11 +7,12 @@ import { ProductoPrincipal } from '@products/interfaces/productoPrincipal';
 import { Talla } from '@products/interfaces/talla.interface';
 import { Observable, tap } from 'rxjs';
 import { SubProducto } from '../interfaces/subProducto.interface';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class productoService {
-  private apiUrl = 'http://localhost:7038/api/ProductoPrincipal/';
-
+  private apiUrl = `${environment.apiUrl}/ProductoPrincipal/`;
+  private apiSubUrl = `${environment.apiUrl}/subproductos`;
   constructor(private http: HttpClient) {}
 
   uploadImage(file: File): Observable<{ path: string }> {
@@ -24,10 +25,16 @@ export class productoService {
     return this.http.post(this.apiUrl, producto);
   }
   addSubProducto(subProducto:any): Observable<any>{
-    return this.http.post("http://localhost:7038/api/subproductos",subProducto)
+    return this.http.post(`${this.apiSubUrl}`,subProducto)
+  }
+  actualizarSubProducto(sub:any){
+     return this.http.put(`${this.apiSubUrl}/ActualizarSubProducto`,sub);
+  }
+  eliminarSubProducto(id:number){
+    return this.http.delete(`${this.apiSubUrl}/EliminarSubProducto/${id}`);
   }
      getCategoria(): Observable<Categoria[]>{
-          return this.http.get<Categoria[]>("http://localhost:7038/api/categoria")
+         return this.http.get<Categoria[]>(`${environment.apiUrl}/categoria`)
           .pipe(tap((resp) => console.log(resp)));
         }
 
@@ -36,17 +43,17 @@ export class productoService {
           .pipe(tap((resp) => console.log(resp)));
         }
 
-        getColor(): Observable<Color[]>{
-          return this.http.get<Color[]>("http://localhost:7038/api/color")
+         getColor(): Observable<Color[]>{
+          return this.http.get<Color[]>(`${environment.apiUrl}/color`)
           .pipe(tap((resp) => console.log(resp)));
         }
 
          getTalla(): Observable<Talla[]>{
-          return this.http.get<Talla[]>("http://localhost:7038/api/talla")
+          return this.http.get<Talla[]>(`${environment.apiUrl}/talla`)
           .pipe(tap((resp) => console.log(resp)));
         }
         getSubProductosPorProducto(idProductoPrincipal: number): Observable<SubProducto[]> {
-  return this.http.get<SubProducto[]>(`http://localhost:7038/api/subproductos/producto/${idProductoPrincipal}`)
+  return this.http.get<SubProducto[]>(`${this.apiSubUrl}/producto/${idProductoPrincipal}`)
     .pipe(tap((resp) => console.log("📥 Subproductos:", resp)));
 }
 

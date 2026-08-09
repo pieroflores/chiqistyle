@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 
 export interface Ubicacion {
@@ -21,7 +22,7 @@ export interface Almacen {
   providedIn: 'root'
 })
 export class AlmacenService {
-  private apiUrl = 'http://localhost:7038/api';
+  private apiUrl = environment.apiUrl;
   constructor(private http: HttpClient) {}
 
   // 🔹 Listar almacenes
