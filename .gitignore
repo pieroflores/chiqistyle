@@ -22,3 +22,9 @@ back/**/appsettings.json
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Archivos subidos por clientes (comprobantes de pago)
+back/MinimusaAPI/MinimusaAPI/wwwroot/comprobantes/*
+back/MinimusaAPI/MinimusaAPI/wwwroot/uploads/*
+!back/MinimusaAPI/MinimusaAPI/wwwroot/comprobantes/.gitkeep
+!back/MinimusaAPI/MinimusaAPI/wwwroot/uploads/.gitkeep
