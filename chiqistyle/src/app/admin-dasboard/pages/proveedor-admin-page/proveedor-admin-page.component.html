@@ -2,19 +2,24 @@
 
   <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Proveedores</h2>
 
-  <div class="bg-white rounded-lg shadow p-4 mb-6">
+  <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
     <div class="mb-4">
       <input
-  type="text"
-  placeholder="Buscar por nombre o ruc..."
-  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-  [(ngModel)]="busqueda"
-  (input)="filtrarProveedor()"
-/>
+        type="text"
+        placeholder="Buscar por nombre o ruc..."
+        class="w-full rounded-md border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        [(ngModel)]="busqueda"
+        (input)="filtrarProveedor()"
+      />
+    </div>
+
+    <!-- mobile-only: indicador visual de que la tabla se puede deslizar horizontalmente -->
+    <div class="border-b border-blue-100 bg-gradient-to-r from-blue-50 via-white to-blue-50 px-3 py-2 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-600 md:hidden">
+      ← Desliza para ver más →
     </div>
 
     <div class="overflow-x-auto">
-      <table class="min-w-full table-auto text-sm text-left">
+      <table class="min-w-[1100px] table-auto text-left text-sm md:min-w-full">
         <thead class="bg-gray-200">
           <tr>
             <th class="px-4 py-2">ID</th>
@@ -27,50 +32,50 @@
           </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let p of proveedorFiltradas" class="border-b hover:bg-gray-50">
-      <td class="px-4 py-2">{{ p.idProveedor  }}</td>
-      <td class="px-4 py-2">{{ p.nombreProveedor  }}</td>
-      <td class="px-4 py-2">{{ p.ruc  }}</td>
-      <td class="px-4 py-2">{{ p.direccion  }}</td>
-      <td class="px-4 py-2">{{ p.telefono  }}</td>
-      <td class="px-4 py-2">{{ p.email  }}</td>
-      <td class="px-4 py-2 text-center space-x-2">
-        <button (click)="editarProveedor(p)" class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-600 transition-colors">
-          Editar
-        </button>
-        <button (click)="eliminarProveedor(p.idProveedor!)"
-  class="bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600 transition-colors">
-  Eliminar
-</button>
-
-      </td>
-    </tr>
+          <tr *ngFor="let p of proveedorFiltradas" class="border-b hover:bg-gray-50">
+            <td class="px-4 py-2">{{ p.idProveedor }}</td>
+            <td class="px-4 py-2">{{ p.nombreProveedor }}</td>
+            <td class="px-4 py-2">{{ p.ruc }}</td>
+            <td class="px-4 py-2">{{ p.direccion }}</td>
+            <td class="px-4 py-2">{{ p.telefono }}</td>
+            <td class="px-4 py-2">{{ p.email }}</td>
+            <td class="px-4 py-2 text-center">
+              <div class="flex flex-col gap-2 sm:flex-row sm:justify-center">
+                <button (click)="editarProveedor(p)" class="rounded-md bg-blue-500 px-3 py-1 text-xs text-white hover:bg-blue-600 transition-colors">
+                  Editar
+                </button>
+                <button (click)="eliminarProveedor(p.idProveedor!)" class="rounded-md bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600 transition-colors">
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <div class="bg-white rounded-lg shadow p-4">
+  <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
     <h3 class="text-xl font-semibold mb-4 text-gray-700">
        {{ proveedorEnEdicion != null ? 'Actualizar Proveedor' : 'Agregar Nuevo Proveedor' }}
     </h3>
 
-    <form [formGroup]="proveedorForm" (ngSubmit)="onSubmit()" class="space-y-4">
-      <div>
+    <!-- mobile-first: 1 columna en móvil y 2 columnas en pantallas mayores -->
+    <form [formGroup]="proveedorForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="sm:col-span-2">
         <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre del Proveedor</label>
         <input type="text" id="nombre" formControlName="nombreProveedor" name="nombre" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
       </div>
 
       <div>
         <label for="ruc" class="block text-sm font-medium text-gray-700">RUC</label>
-        <!-- <input type="number" id="ruc" name="ruc" formControlName="ruc" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> -->
-      <input
-  type="text"
-  formControlName="ruc"
-  pattern="[0-9]*"
-  maxlength="11"
- class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-/>
+        <input
+          type="text"
+          formControlName="ruc"
+          pattern="[0-9]*"
+          maxlength="11"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        />
       </div>
 
       <div>
@@ -80,28 +85,24 @@
 
       <div>
         <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
-        <!-- <input type="number" id="telefono" name="telefono" formControlName="telefono" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> -->
         <input
-  type="text"
-  formControlName="telefono"
-  pattern="[0-9]*"
-  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-/>
+          type="text"
+          formControlName="telefono"
+          pattern="[0-9]*"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        />
       </div>
 
-      <div>
+      <div class="sm:col-span-2">
         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
         <input type="email" id="email" name="email" formControlName="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
       </div>
 
-      <div>
-        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+      <div class="sm:col-span-2 flex flex-col gap-3 sm:flex-row sm:justify-end">
+        <button type="submit" class="w-full rounded-md bg-green-600 px-4 py-2 text-white shadow-sm transition-colors hover:bg-green-700 sm:w-auto">
           Guardar Proveedor
         </button>
-
-      </div>
-      <div>
-         <button (click)="cancelarEdicion()" type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+        <button (click)="cancelarEdicion()" type="button" class="w-full rounded-md bg-gray-400 px-4 py-2 text-white shadow-sm transition-colors hover:bg-gray-500 sm:w-auto">
           Cancelar
         </button>
       </div>

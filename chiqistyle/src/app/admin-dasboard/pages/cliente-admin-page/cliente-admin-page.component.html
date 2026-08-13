@@ -2,19 +2,24 @@
 
   <h2 class="text-3xl font-bold mb-6 text-gray-800">Administrar Clientes</h2>
 
-  <div class="bg-white rounded-lg shadow p-4 mb-6">
+  <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
     <div class="mb-4">
       <input
-  type="text"
-  placeholder="Buscar por nombre o Dni..."
-  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-  [(ngModel)]="busqueda"
-  (input)="filtrarCliente()"
-/>
+        type="text"
+        placeholder="Buscar por nombre o Dni..."
+        class="w-full rounded-md border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        [(ngModel)]="busqueda"
+        (input)="filtrarCliente()"
+      />
+    </div>
+
+    <!-- mobile-only: indicador visual de que la tabla se puede deslizar horizontalmente -->
+    <div class="border-b border-blue-100 bg-gradient-to-r from-blue-50 via-white to-blue-50 px-3 py-2 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-600 md:hidden">
+      ← Desliza para ver más →
     </div>
 
     <div class="overflow-x-auto">
-      <table class="min-w-full table-auto text-sm text-left">
+      <table class="min-w-[900px] table-auto text-left text-sm md:min-w-full">
         <thead class="bg-gray-200">
           <tr>
             <th class="px-4 py-2">ID</th>
@@ -27,33 +32,34 @@
         </thead>
         <tbody>
           <tr *ngFor="let c of clientesFiltradas" class="border-b hover:bg-gray-50">
-      <td class="px-4 py-2">{{ c.idCliente  }}</td>
-      <td class="px-4 py-2">{{ c.nombreCliente  }}</td>
-      <td class="px-4 py-2">{{ c.dni  }}</td>
-      <td class="px-4 py-2">{{ c.direccion  }}</td>
-      <td class="px-4 py-2">{{ c.telefono  }}</td>
-      <td class="px-4 py-2 text-center space-x-2">
-        <button (click)="editarCliente(c)" class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-600 transition-colors">
-          Editar
-        </button>
-        <button (click)="eliminarCliente(c.idCliente!)"
-  class="bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600 transition-colors">
-  Eliminar
-</button>
-
-      </td>
-    </tr>
+            <td class="px-4 py-2">{{ c.idCliente }}</td>
+            <td class="px-4 py-2">{{ c.nombreCliente }}</td>
+            <td class="px-4 py-2">{{ c.dni }}</td>
+            <td class="px-4 py-2">{{ c.direccion }}</td>
+            <td class="px-4 py-2">{{ c.telefono }}</td>
+            <td class="px-4 py-2 text-center">
+              <div class="flex flex-col gap-2 sm:flex-row sm:justify-center">
+                <button (click)="editarCliente(c)" class="rounded-md bg-blue-500 px-3 py-1 text-xs text-white hover:bg-blue-600 transition-colors">
+                  Editar
+                </button>
+                <button (click)="eliminarCliente(c.idCliente!)" class="rounded-md bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600 transition-colors">
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <div class="bg-white rounded-lg shadow p-4">
+  <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
     <h3 class="text-xl font-semibold mb-4 text-gray-700">
       {{ clienteEnEdicion != null ? 'Actualizar Cliente' : 'Agregar Nuevo Cliente' }}
     </h3>
 
-    <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()"  class="space-y-4">
+    <!-- mobile-first: 1 columna en móvil y 2 columnas en pantallas mayores -->
+    <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div>
         <label for="dni" class="block text-sm font-medium text-gray-700">DNI</label>
         <input type="text" id="dni" name="dni" formControlName="DNI" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" (blur)="buscarDni()">
@@ -63,24 +69,20 @@
         <input type="text" id="nombre" name="nombre" formControlName="NombreCliente" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
       </div>
 
-
-
-      <div>
+      <div class="sm:col-span-2">
         <label for="direccion" class="block text-sm font-medium text-gray-700">Dirección Agencia Shalom</label>
         <input type="text" id="direccion" formControlName="Direccion" name="direccion" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
       </div>
       <div>
         <label for="telefono" class="block text-sm font-medium text-gray-700">Telefono</label>
-        <input type="text" id="telefono" formControlName="telefono"  maxlength="9" name="telefono" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        <input type="text" id="telefono" formControlName="telefono" maxlength="9" name="telefono" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
       </div>
 
-      <div>
-        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+      <div class="sm:col-span-2 flex flex-col gap-3 sm:flex-row sm:justify-end">
+        <button type="submit" class="w-full rounded-md bg-green-600 px-4 py-2 text-white shadow-sm transition-colors hover:bg-green-700 sm:w-auto">
           Guardar Cliente
         </button>
-      </div>
-      <div>
-        <button (click)="cancelarEdicion()" type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-green-700 transition-colors">
+        <button (click)="cancelarEdicion()" type="button" class="w-full rounded-md bg-gray-400 px-4 py-2 text-white shadow-sm transition-colors hover:bg-gray-500 sm:w-auto">
           Cancelar
         </button>
       </div>
