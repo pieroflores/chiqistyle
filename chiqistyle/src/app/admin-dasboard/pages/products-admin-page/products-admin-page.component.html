@@ -39,8 +39,9 @@
     >
   </div>
 
-  <div class="tabla-wrapper">
-    <table class="tabla-productos">
+  <!-- overflow-x-auto: mantiene la tabla legible en móvil sin romper el layout -->
+  <div class="tabla-wrapper overflow-x-auto">
+    <table class="tabla-productos min-w-[900px] w-full">
       <thead>
         <tr>
           <th class="col-id">ID</th>
@@ -56,7 +57,7 @@
           </td>
           <td class="col-foto">
             <div class="foto-wrapper">
-              <img *ngIf="t.fotoProducto" [src]="apiHost + t.fotoProducto" alt="Foto producto" />
+              <img *ngIf="t.fotoProducto" [src]="apiHost + t.fotoProducto" alt="Foto producto" class="max-w-full h-auto object-cover" />
               <i *ngIf="!t.fotoProducto" class="fa-solid fa-image"></i>
             </div>
           </td>
@@ -106,7 +107,8 @@
   <div *ngIf="mostrarFormProducto" class="animate-fade-in">
     <form #form="ngForm" (ngSubmit)="onSubmit(form)">
 
-      <div class="form-grid">
+      <!-- mobile-first: 1 columna en móvil y columnas proporcionales en pantallas mayores -->
+      <div class="form-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
         <div class="campo-form">
           <label for="nombreProducto">Nombre del Producto</label>
@@ -336,7 +338,8 @@
          <!-- ================= PASO 3: PRECIOS ================= -->
          <div *ngIf="pasoActual === 3" class="animate-slide-left paso-contenido">
 
-           <div class="grid grid-cols-2 gap-4 mb-6">
+           <!-- mobile-first: apila los campos y solo expande a 2 columnas en desktop -->
+           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
              <div>
                <label class="block text-sm font-medium text-gray-700">Precio de Compra</label>
                <input type="number" [(ngModel)]="subProducto.precioCompra" step="0.01" name="precioCompra" class="mt-1 block w-full px-3 py-2 border rounded-md">
@@ -374,7 +377,7 @@
 </div>
 
 <div *ngIf="mostrarModalColor" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-  <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+  <div class="w-[calc(100%-1.5rem)] max-w-md rounded-lg bg-white p-4 shadow-xl sm:p-6">
     <h3 class="text-lg font-bold mb-4">Registrar nuevo color</h3>
     <div class="mb-3">
       <label class="text-sm">Nombre del color</label>
@@ -384,14 +387,14 @@
       <label class="text-sm">Abreviatura</label>
       <input type="text" [(ngModel)]="nuevoColor.abreviatura" readonly class="w-full border px-3 py-2 rounded mt-1" placeholder="Ejemplo: LIL">
     </div>
-    <div class="flex justify-end gap-2">
-      <button (click)="cerrarModalColor()" class="px-3 py-1 bg-gray-400 text-white rounded">Cancelar</button>
-      <button (click)="guardarNuevoColor()" class="px-3 py-1 bg-green-600 text-white rounded">Guardar</button>
+    <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+      <button (click)="cerrarModalColor()" class="w-full rounded bg-gray-400 px-3 py-2 text-white sm:w-auto">Cancelar</button>
+      <button (click)="guardarNuevoColor()" class="w-full rounded bg-green-600 px-3 py-2 text-white sm:w-auto">Guardar</button>
     </div>
   </div>
 </div>
 <div *ngIf="mostrarModalTalla" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-  <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+  <div class="w-[calc(100%-1.5rem)] max-w-md rounded-lg bg-white p-4 shadow-xl sm:p-6">
     <h3 class="text-lg font-bold mb-4">Registrar nueva talla</h3>
 
     <div class="mb-3">
@@ -412,9 +415,9 @@
              placeholder="Ejemplo: EXT">
     </div>
 
-    <div class="flex justify-end gap-2">
-      <button (click)="cerrarModalTalla()" class="px-3 py-1 bg-gray-400 text-white rounded">Cancelar</button>
-      <button (click)="guardarNuevaTalla()" class="px-3 py-1 bg-green-600 text-white rounded">Guardar</button>
+    <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+      <button (click)="cerrarModalTalla()" class="w-full rounded bg-gray-400 px-3 py-2 text-white sm:w-auto">Cancelar</button>
+      <button (click)="guardarNuevaTalla()" class="w-full rounded bg-green-600 px-3 py-2 text-white sm:w-auto">Guardar</button>
     </div>
   </div>
 </div>
@@ -448,8 +451,10 @@
     <div class="modal-body">
 
       <!-- TABLA -->
-      <div class="modal-tabla-wrapper" [ngClass]="mostrarDrawerEditar ? 'w-[65%]' : 'w-full'">
-        <table class="tabla-variantes">
+      <!-- width-responsive: en móvil ocupa el 100%, en desktop el ancho relativo del panel -->
+      <div class="modal-tabla-wrapper w-full" [ngClass]="mostrarDrawerEditar ? 'sm:w-[65%]' : 'sm:w-full'">
+        <div class="overflow-x-auto">
+        <table class="tabla-variantes min-w-[900px] w-full">
           <thead>
             <tr>
               <th>ID</th>
@@ -495,11 +500,75 @@
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
 
-      <!-- DRAWER EDITAR -->
-      <div class="modal-drawer" [ngClass]="mostrarDrawerEditar ? 'w-[35%]' : 'w-0'">
-        <div *ngIf="mostrarDrawerEditar" class="drawer-contenido animate-slide-left">
+      <!-- DRAWER EDITAR (móvil = modal centrado; desktop = panel lateral) -->
+      <div *ngIf="mostrarDrawerEditar" class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:hidden" (click)="cerrarDrawer()">
+        <div class="mobile-edit-panel" (click)="$event.stopPropagation()">
+          <div class="drawer-header px-0 pb-4">
+            <h3>Editar Variante</h3>
+            <button (click)="cerrarDrawer()" class="drawer-cerrar" aria-label="Cerrar editor">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="drawer-body">
+            <div class="drawer-campo">
+              <label>Color</label>
+              <select [(ngModel)]="editarSubProducto.idColor" class="drawer-input">
+                <option *ngFor="let c of color" [ngValue]="c.idColor">{{ c.nombreColor }}</option>
+              </select>
+            </div>
+
+            <div class="drawer-campo">
+              <label>Talla</label>
+              <select [(ngModel)]="editarSubProducto.idTalla" class="drawer-input">
+                <option *ngFor="let t of talla" [ngValue]="t.idTalla">{{ t.nombreTalla }}</option>
+              </select>
+            </div>
+
+            <div class="drawer-grid">
+              <div class="drawer-campo">
+                <label>Precio Compra</label>
+                <input type="number" [(ngModel)]="editarSubProducto.precioCompra" class="drawer-input">
+              </div>
+              <div class="drawer-campo">
+                <label>Precio Venta</label>
+                <input type="number" [(ngModel)]="editarSubProducto.precioVenta" class="drawer-input">
+              </div>
+              <div class="drawer-campo">
+                <label>Precio Mayor</label>
+                <input type="number" [(ngModel)]="editarSubProducto.precioVentaPorMayor" class="drawer-input">
+              </div>
+              <div class="drawer-campo">
+                <label>Liquidación</label>
+                <input type="number" [(ngModel)]="editarSubProducto.precioVentaLiquidacion" class="drawer-input">
+              </div>
+              <div class="drawer-campo">
+                <label>Largo pantalón (cm)</label>
+                <input type="number" step="0.1" [(ngModel)]="editarSubProducto.largoPantalon" class="drawer-input">
+              </div>
+              <div class="drawer-campo">
+                <label>Entrepierna (cm)</label>
+                <input type="number" step="0.1" [(ngModel)]="editarSubProducto.entrepierna" class="drawer-input">
+              </div>
+            </div>
+
+            <div class="drawer-acciones">
+              <button class="btn-drawer-guardar" (click)="guardarEdicionSubProducto()">
+                <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar
+              </button>
+              <button class="btn-drawer-cancelar" (click)="cerrarDrawer()">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="mostrarDrawerEditar" class="modal-drawer hidden sm:flex sm:w-[35%]">
+        <div class="drawer-contenido animate-slide-left">
 
           <div class="drawer-header">
             <h3>Editar Variante</h3>
@@ -566,8 +635,8 @@
     </div>
 
     <!-- FOOTER -->
-    <div class="modal-footer">
-      <button (click)="cerrarModalSubProducto()" class="btn-modal-cerrar">
+    <div class="modal-footer flex justify-end">
+      <button (click)="cerrarModalSubProducto()" class="btn-modal-cerrar w-full sm:w-auto">
         Cerrar
       </button>
     </div>
