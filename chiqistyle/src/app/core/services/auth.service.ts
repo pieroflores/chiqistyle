@@ -1,9 +1,10 @@
 // src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { Observable, tap } from 'rxjs';
- export interface UsuarioResponse {
+import { environment } from 'src/environments/environment';
+
+export interface UsuarioResponse {
   idUsuario: number;
   usuarioLogin: string;
   nombreCompleto: string;

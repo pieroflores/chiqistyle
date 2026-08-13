@@ -1,12 +1,12 @@
 import { Routes } from "@angular/router";
 import { NotFoundPageComponent } from "./pages/not-found-page/not-found-page.component";
 import { LoginPageComponent } from "@auth/pages/login-page/login-page.component";
+import { CatalogoPageComponent } from "./pages/catalogo-page/catalogo-page.component";
 
 export const storeFrontRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'login',   // 👈 redirección inicial al login
-    pathMatch: 'full'      // 👈 asegura que solo redirija la raíz
+    component: CatalogoPageComponent
   },
   {
     path: 'login',
@@ -14,7 +14,7 @@ export const storeFrontRoutes: Routes = [
   },
   {
     path: '**',
-    component: NotFoundPageComponent   // 👈 muestra página 404
+    component: NotFoundPageComponent
   }
 ];
 
