@@ -13,9 +13,10 @@
         <h3 class="text-xl font-semibold mb-4 text-gray-700">
           Datos Generales
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- mobile-first: 1 columna en móvil y 3 en desktop para que los campos no se compriman -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <!-- Proveedor -->
-          <div>
+          <div class="sm:col-span-1 lg:col-span-1">
             <label for="idProveedor" class="block text-sm font-medium text-gray-700">Proveedor</label>
           <select
   id="proveedor"
@@ -80,9 +81,10 @@
           Producto y Ubicación de Destino
         </h3>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <!-- mobile-first: apila en 1 columna y expande según el ancho disponible -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
           <!-- SubProducto -->
-          <div class="md:col-span-2">
+          <div class="sm:col-span-2 lg:col-span-2">
             <label for="idSubProducto" class="block text-sm font-medium text-gray-700">Producto / Variante</label>
            <!-- <select
   id="idSubProducto"
@@ -122,7 +124,7 @@
   type="button"
   (click)="abrirModalCantidades()"
   [disabled]="!idProductoPrincipalSeleccionado"
-  class="mt-2 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
+  class="mt-2 w-full sm:w-auto bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
 >
   Distribuir por tallas
 </button>
@@ -161,8 +163,8 @@
         </div>
 
         <!-- Ubicación -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="md:col-span-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="sm:col-span-2 lg:col-span-3">
             <label for="idAlmacenFinal" class="block text-sm font-medium text-gray-700">Ubicación Específica</label>
             <select
   id="idAlmacenFinal"
@@ -178,10 +180,10 @@
         </div>
 
         <!-- Botón agregar -->
-        <div class="mt-6 text-right">
+        <div class="mt-6 flex justify-end">
           <button
             type="button"
-            class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-md"
+            class="w-full sm:w-auto bg-indigo-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-md"
             (click)="agregarDetalle()"
           >
             Agregar al Detalle
@@ -195,11 +197,12 @@
           Productos Pendientes de Registrar
         </h3>
 
+        <!-- overflow-x-auto: permite scroll horizontal en móvil sin romper la tabla -->
         <div class="overflow-x-auto rounded-lg border border-gray-200">
-          <table class="min-w-full divide-y divide-gray-200">
+          <table class="min-w-[900px] w-full divide-y divide-gray-200">
             <thead class="bg-gray-100">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">PROVEEDOR</th>
+                <th class="sticky left-0 z-10 bg-gray-100 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">PROVEEDOR</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">FECHA COMPRA</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">PRODUCTO/VARIANTE</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">UBICACIÓN</th>
@@ -211,7 +214,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr *ngFor="let compra of CompraList; let i = index">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td class="sticky left-0 z-10 bg-white px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 shadow-inner shadow-gray-100">
       {{ compra.Proveedor }}
     </td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -244,15 +247,15 @@
         </div>
 
         <!-- Total y Botón -->
-        <div class="flex justify-end items-center mt-6 p-4 bg-white rounded-lg border border-gray-200">
-          <div class="text-lg font-bold text-gray-800 mr-8">
+        <div class="mt-6 flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-end">
+          <div class="text-lg font-bold text-gray-800">
             Total Compra:
              <span class="text-green-600">{{ totalCompra | currency:'S/.':'symbol' }}</span>
           </div>
          <button
   type="button"
   (click)="finalizarCompra()"
-  class="bg-green-600 text-white px-8 py-3 rounded-lg text-lg font-bold hover:bg-green-700 transition-colors shadow-lg flex items-center space-x-2"
+  class="w-full sm:w-auto bg-green-600 text-white px-8 py-3 rounded-lg text-lg font-bold hover:bg-green-700 transition-colors shadow-lg flex items-center justify-center space-x-2"
 >
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
        stroke-width="2" stroke="currentColor" class="w-5 h-5">
@@ -268,50 +271,52 @@
 </div>
 <div *ngIf="mostrarModalCantidades" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
 
-  <div class="bg-white rounded-xl shadow-xl w-[800px] p-6">
+  <div class="w-[calc(100%-1.5rem)] max-w-[800px] rounded-xl bg-white p-4 shadow-xl sm:p-6">
 
     <h3 class="text-xl font-bold mb-4">Distribución por Tallas</h3>
 
-    <label class="flex items-center gap-2 mb-3">
+    <label class="mb-3 flex items-center gap-2 text-sm text-gray-700">
       <input type="checkbox" [(ngModel)]="usarCantidadGeneral">
       Todos los productos y colores tienen la misma cantidad
     </label>
 
     <div *ngIf="usarCantidadGeneral" class="mb-4">
-      <label>Cantidad general</label>
+      <label class="block text-sm font-medium text-gray-700">Cantidad general</label>
       <input type="number" [(ngModel)]="cantidadGeneral" min="1"
-             class="w-32 border px-2 py-1 rounded">
+             class="mt-1 w-full rounded border px-2 py-1 sm:w-32">
     </div>
 
-    <table class="w-full text-sm border">
-      <thead>
-        <tr class="bg-gray-100">
-          <th>Color</th>
-          <th>Talla</th>
-          <th>Cantidad</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let t of tallasProducto">
-          <td>{{ t.nombreColor }}</td>
-          <td>{{ t.talla }}</td>
-          <td>
-            <input
-              type="number"
-              [(ngModel)]="t.cantidad"
-              [disabled]="usarCantidadGeneral"
-              min="1"
-              class="w-20 border px-2 py-1 rounded">
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm border">
+        <thead>
+          <tr class="bg-gray-100">
+            <th>Color</th>
+            <th>Talla</th>
+            <th>Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of tallasProducto">
+            <td>{{ t.nombreColor }}</td>
+            <td>{{ t.talla }}</td>
+            <td>
+              <input
+                type="number"
+                [(ngModel)]="t.cantidad"
+                [disabled]="usarCantidadGeneral"
+                min="1"
+                class="w-full rounded border px-2 py-1 sm:w-20">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <div class="flex justify-end gap-3 mt-6">
-      <button (click)="cerrarModal()" class="px-4 py-2 bg-gray-400 text-white rounded">
+    <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+      <button (click)="cerrarModal()" class="w-full rounded bg-gray-400 px-4 py-2 text-white sm:w-auto">
         Cancelar
       </button>
-      <button (click)="confirmarDistribucion()" class="px-4 py-2 bg-green-600 text-white rounded">
+      <button (click)="confirmarDistribucion()" class="w-full rounded bg-green-600 px-4 py-2 text-white sm:w-auto">
         Confirmar
       </button>
     </div>
