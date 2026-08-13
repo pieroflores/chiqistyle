@@ -1,32 +1,54 @@
-<div class="flex h-screen bg-slate-100 text-slate-800">
-  <aside class="bg-pink-200 w-64 h-full fixed left-0 top-0 flex flex-col shadow-lg">
+<div class="flex h-screen bg-slate-100 text-slate-800 overflow-hidden">
+  <!-- botón hamburguesa: en móvil abre el overlay y en desktop contrae/expande el menú -->
+  <button
+    type="button"
+    (click)="toggleSidebar()"
+    class="fixed left-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-full border border-pink-200 bg-pink-100 text-xl text-pink-600 shadow-sm transition hover:bg-pink-200 md:left-6"
+    aria-label="Toggle sidebar"
+  >
+    ☰
+  </button>
+
+  <aside
+    class="fixed inset-y-0 left-0 z-40 flex h-full flex-col overflow-hidden bg-pink-200 shadow-xl transition-all duration-300 ease-in-out"
+    [class.w-64]="!isSidebarCollapsed || (isMobileView && !isSidebarCollapsed)"
+    [class.w-20]="isSidebarCollapsed && !isMobileView"
+    [class.-translate-x-full]="isMobileView && isSidebarCollapsed"
+    [class.translate-x-0]="!isMobileView || !isSidebarCollapsed"
+  >
     <!-- Logo -->
-   <div class="p-6 border-b border-gray-200 flex justify-center bg-gradient-to-r bg-pink-200 ">
-  <img src="img/logochiqi.png" alt="logo chiqisyle" class="w-36 h-auto object-contain" />
-</div>
+    <div class="flex justify-center border-b border-gray-200 bg-pink-200 p-4 md:p-6">
+      <img
+        src="img/logochiqi.png"
+        alt="logo chiqisyle"
+        class="h-auto object-contain transition-all duration-300"
+        [ngClass]="isSidebarCollapsed ? 'w-10' : 'w-32 md:w-36'"
+      />
+    </div>
 
     <!-- Perfil -->
-    <div class="p-6 border-b border-gray-200">
-      <p class="text-gray-600 mb-2 text-sm">Bienvenido</p>
-      <div class="flex items-center space-x-2">
-        <i class="fa-solid fa-user-circle text-gray-700 text-3xl"></i>
-        <div>
-          <p class="font-bold text-gray-900 leading-tight">{{ usuario?.nombreCompleto }}</p>
+    <div class="border-b border-gray-200 p-4 md:p-6" [class.px-2]="isSidebarCollapsed">
+      <p *ngIf="!isSidebarCollapsed" class="mb-2 text-sm text-gray-600">Bienvenido</p>
+      <div class="flex items-center gap-2" [ngClass]="isSidebarCollapsed ? 'justify-center' : 'justify-start'">
+        <i class="fa-solid fa-user-circle text-3xl text-gray-700"></i>
+        <div *ngIf="!isSidebarCollapsed">
+          <p class="text-sm font-bold leading-tight text-gray-900">{{ usuario?.nombreCompleto }}</p>
           <p class="text-xs text-gray-500">{{ usuario?.nombreRol }}</p>
         </div>
       </div>
     </div>
 
     <!-- Navegación -->
-    <nav class="flex-1 overflow-y-auto p-4 space-y-2 text-sm">
+    <nav class="flex-1 overflow-y-auto p-3 text-sm" [class.p-2]="isSidebarCollapsed">
       <a
         *ngIf="tieneModulo('Dashboard')"
         routerLink="/admin/dashboard"
         routerLinkActive="bg-rose-300 font-semibold"
-        class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-rose-200 transition"
+        class="flex items-center rounded-md px-3 py-2 transition hover:bg-rose-200"
+        [ngClass]="isSidebarCollapsed ? 'justify-center' : 'space-x-2'"
       >
-        <i class="fa-solid fa-gauge text-gray-700"></i>
-        <span class="font-semibold">Dashboard</span>
+        <i class="fa-solid fa-gauge text-rose-500"></i>
+        <span *ngIf="!isSidebarCollapsed" class="font-semibold">Dashboard</span>
       </a>
 
       <details
@@ -34,45 +56,48 @@
         class="group"
         [open]="true"
       >
-        <summary class="flex items-center justify-between px-3 py-2 rounded-md cursor-pointer hover:bg-pink-200 transition">
-          <span class="flex items-center space-x-2">
-            <i class="fa-solid fa-layer-group text-gray-700"></i>
-            <span class="font-semibold">Catálogo</span>
+        <summary
+          class="flex cursor-pointer items-center justify-between rounded-md px-3 py-2 transition hover:bg-pink-200"
+          [ngClass]="isSidebarCollapsed ? 'justify-center' : ''"
+        >
+          <span class="flex items-center" [ngClass]="isSidebarCollapsed ? 'justify-center' : 'space-x-2'">
+            <i class="fa-solid fa-layer-group text-violet-600"></i>
+            <span *ngIf="!isSidebarCollapsed" class="font-semibold">Catálogo</span>
           </span>
         </summary>
-        <ul class="pl-8 mt-2 space-y-1 text-sm">
+        <ul *ngIf="!isSidebarCollapsed" class="mt-2 space-y-1 pl-8 text-sm">
           <li *ngIf="tieneModulo('Cliente')">
-            <a routerLink="/admin/cliente" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/cliente" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-user text-gray-600 mr-2"></i> Cliente
             </a>
           </li>
           <li *ngIf="tieneModulo('Proveedor')">
-            <a routerLink="/admin/proveedor" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/proveedor" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-truck-field text-gray-600 mr-2"></i> Proveedor
             </a>
           </li>
           <li *ngIf="tieneModulo('Almacen')">
-            <a routerLink="/admin/almacen" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/almacen" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-boxes-stacked text-gray-600 mr-2"></i> Almacén
             </a>
           </li>
           <li *ngIf="tieneModulo('Color')">
-            <a routerLink="/admin/color" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/color" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-palette text-gray-600 mr-2"></i> Color
             </a>
           </li>
           <li *ngIf="tieneModulo('Talla')">
-            <a routerLink="/admin/talla" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/talla" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-ruler text-gray-600 mr-2"></i> Talla
             </a>
           </li>
           <li *ngIf="tieneModulo('Categoria')">
-            <a routerLink="/admin/categoria" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/categoria" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-tags text-gray-600 mr-2"></i> Categoría
             </a>
           </li>
           <li *ngIf="tieneModulo('Productos')">
-            <a routerLink="/admin/Productos" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/Productos" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-shirt text-gray-600 mr-2"></i> Producto
             </a>
           </li>
@@ -80,30 +105,33 @@
       </details>
 
       <details *ngIf="tieneModuloGrupo(['Compras', 'Ventas', 'PagosP', 'GestiónStockInve'])" class="group" [open]="true">
-        <summary class="flex items-center justify-between px-3 py-2 rounded-md cursor-pointer hover:bg-pink-200 transition">
-          <span class="flex items-center space-x-2">
-            <i class="fa-solid fa-cash-register text-gray-700"></i>
-            <span class="font-semibold">Operaciones</span>
+        <summary
+          class="flex cursor-pointer items-center justify-between rounded-md px-3 py-2 transition hover:bg-pink-200"
+          [ngClass]="isSidebarCollapsed ? 'justify-center' : ''"
+        >
+          <span class="flex items-center" [ngClass]="isSidebarCollapsed ? 'justify-center' : 'space-x-2'">
+            <i class="fa-solid fa-cash-register text-amber-600"></i>
+            <span *ngIf="!isSidebarCollapsed" class="font-semibold">Operaciones</span>
           </span>
         </summary>
-        <ul class="pl-8 mt-2 space-y-1 text-sm">
+        <ul *ngIf="!isSidebarCollapsed" class="mt-2 space-y-1 pl-8 text-sm">
           <li *ngIf="tieneModulo('Compras')">
-            <a routerLink="/admin/compra" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/compra" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-truck text-gray-600 mr-2"></i> Compra
             </a>
           </li>
           <li *ngIf="tieneModulo('Ventas')">
-            <a routerLink="/admin/venta" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/venta" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-cart-shopping text-gray-600 mr-2"></i> Venta
             </a>
           </li>
           <li *ngIf="tieneModulo('PagosP')">
-            <a routerLink="/admin/gestion-pagos-pendientes" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/gestion-pagos-pendientes" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-hand-holding-dollar text-gray-600 mr-2"></i> Pagos Pendientes
             </a>
           </li>
           <li *ngIf="tieneModulo('GestiónStockInve')">
-            <a routerLink="/admin/gestion-inventario-stock" class="block py-1 px-2 rounded hover:bg-rose-100 hover:text-blue-600">
+            <a routerLink="/admin/gestion-inventario-stock" class="block rounded px-2 py-1 hover:bg-rose-100 hover:text-blue-600">
               <i class="fa-solid fa-boxes-packing text-gray-600 mr-2"></i> Gestión de Stock / Inventario
             </a>
           </li>
@@ -113,61 +141,66 @@
       <a
         *ngIf="tieneModulo('Reportes')"
         routerLink="/admin/reportes"
-        class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-rose-200 transition"
+        class="flex items-center rounded-md px-3 py-2 transition hover:bg-rose-200"
+        [ngClass]="isSidebarCollapsed ? 'justify-center' : 'space-x-2'"
       >
-        <i class="fa-solid fa-chart-line text-gray-700"></i>
-        <span class="font-semibold">Dashboard</span>
+        <i class="fa-solid fa-chart-line text-sky-600"></i>
+        <span *ngIf="!isSidebarCollapsed" class="font-semibold">Dashboard</span>
       </a>
- <a
+
+      <a
         *ngIf="tieneModulo('ReporteVenta')"
         routerLink="/admin/reporte-ventas-page"
-        class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-rose-200 transition"
+        class="flex items-center rounded-md px-3 py-2 transition hover:bg-rose-200"
+        [ngClass]="isSidebarCollapsed ? 'justify-center' : 'space-x-2'"
       >
-        <i class="fa-solid fa-file-invoice-dollar text-lg"></i>
-        <span class="font-semibold">Reporte Ventas</span>
+        <i class="fa-solid fa-file-invoice-dollar text-lg text-red-500"></i>
+        <span *ngIf="!isSidebarCollapsed" class="font-semibold">Reporte Ventas</span>
       </a>
+
       <a
-  *ngIf="tieneModulo('ReporteCompra')"
-  routerLink="/admin/reporte-compras-page"
-  routerLinkActive="bg-green-100 text-green-green-700 font-bold"
-  class="flex items-center space-x-3 px-4 py-2 rounded-md hover:bg-gray-100 transition duration-150 text-gray-700"
->
-  <!-- Ícono: Camión de Entrega (Representa la entrada de mercancía/gastos) -->
-  <i class="fa-solid fa-truck-fast text-lg"></i>
-  <span class="font-semibold">Reporte de Compras</span>
-</a>
-
-<!-- 4. Reporte de Pagos por Cliente -->
-<a
-  *ngIf="tieneModulo('ReportePagosClientes')"
-  routerLink="/admin/reporte-pago-cliente-page"
-  routerLinkActive="bg-purple-100 text-purple-700 font-bold"
-  class="flex items-center space-x-3 px-4 py-2 rounded-md hover:bg-gray-100 transition duration-150 text-gray-700"
->
-  <!-- Ícono: Tarjeta de Crédito (Representa el historial de pagos) -->
-  <i class="fa-solid fa-credit-card text-lg"></i>
-  <span class="font-semibold">Pagos por Cliente</span>
-</a>
-
-      <!-- <a
-        *ngIf="tieneModulo('Usuarios')"
-        routerLink="/admin/usuarios"
-        class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-rose-200 transition"
+        *ngIf="tieneModulo('ReporteCompra')"
+        routerLink="/admin/reporte-compras-page"
+        routerLinkActive="bg-green-100 text-green-green-700 font-bold"
+        class="flex items-center rounded-md px-3 py-2 text-gray-700 transition duration-150 hover:bg-gray-100"
+        [ngClass]="isSidebarCollapsed ? 'justify-center' : 'space-x-3'"
       >
-        <i class="fa-solid fa-user-gear text-gray-700"></i>
-        <span class="font-semibold">Usuarios</span>
-      </a> -->
+        <i class="fa-solid fa-truck-fast text-lg text-emerald-600"></i>
+        <span *ngIf="!isSidebarCollapsed" class="font-semibold">Reporte de Compras</span>
+      </a>
+
+      <a
+        *ngIf="tieneModulo('ReportePagosClientes')"
+        routerLink="/admin/reporte-pago-cliente-page"
+        routerLinkActive="bg-purple-100 text-purple-700 font-bold"
+        class="flex items-center rounded-md px-3 py-2 text-gray-700 transition duration-150 hover:bg-gray-100"
+        [ngClass]="isSidebarCollapsed ? 'justify-center' : 'space-x-3'"
+      >
+        <i class="fa-solid fa-credit-card text-lg text-violet-600"></i>
+        <span *ngIf="!isSidebarCollapsed" class="font-semibold">Pagos por Cliente</span>
+      </a>
     </nav>
 
     <!-- Logout -->
-    <div class="p-4 border-t border-gray-200">
-      <button class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-md font-semibold transition" (click)="cerrarSesion()">
-        <i class="fa-solid fa-right-from-bracket mr-2"></i> Cerrar Sesión
+    <div class="border-t border-gray-200 p-4" [class.px-2]="isSidebarCollapsed">
+      <button
+        class="flex w-full items-center justify-center rounded-md bg-rose-500 py-2 font-semibold text-white transition hover:bg-rose-600"
+        (click)="cerrarSesion()"
+      >
+        <i class="fa-solid fa-right-from-bracket" [ngClass]="isSidebarCollapsed ? '' : 'mr-2'"></i>
+        <span *ngIf="!isSidebarCollapsed">Cerrar Sesión</span>
       </button>
     </div>
   </aside>
 
-  <main class="flex-1 ml-64 p-8 overflow-y-auto">
+  <main
+    class="flex-1 overflow-y-auto p-4 transition-all duration-300 ease-in-out md:p-8"
+    [ngClass]="{
+      'ml-0': isMobileView,
+      'ml-64': !isMobileView && !isSidebarCollapsed,
+      'ml-20': !isMobileView && isSidebarCollapsed
+    }"
+  >
     <router-outlet></router-outlet>
   </main>
 </div>
