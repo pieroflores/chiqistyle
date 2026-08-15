@@ -38,6 +38,8 @@ nuevaTalla: any = {
 };
   tallaService = inject(TallaService);
   productoPrincipal: ProductoPrincipal[] = [];
+  productoPrincipalVariante: ProductoPrincipal[] = [];
+
   filtrarproducto: ProductoPrincipal[]=[];
   visualizarSubProducto: boolean;
   productoSeleccionado: ProductoPrincipal | null = null;
@@ -343,6 +345,7 @@ eliminarImagen(event: Event): void {
   ngOnInit(): void {
 this.cargarCategoria();
 this.cargarProductos();
+this.cargarProductosVariante();
 this.cargarColor();
 this.cargarTalla();
 this.cargarProveedor();
@@ -496,6 +499,20 @@ cargarProductos() {
     }
   });
 }
+cargarProductosVariante() {
+  this.productoService.getProductoVariante().subscribe({
+    next: (resp) => {
+      this.productoPrincipalVariante = resp;
+      console.log(resp);
+      this.filtrarproducto= resp;
+
+    },
+    error: (err) => {
+      console.error('Error al cargar Producto:', err);
+    }
+  });
+}
+
 estaTallaSeleccionada(idTalla: number): boolean {
   return this.subProducto.idTallas.some(
     (x: any) => x.idTalla === idTalla
@@ -527,11 +544,12 @@ verSubProducto(prod: ProductoPrincipal) {
 }
 get productoSeleccionadoVariante(): ProductoPrincipal | null {
   if (!this.subProducto.idProductoPrincipal) return null;
-  return this.productoPrincipal.find(
+  return this.productoPrincipalVariante.find(
     p => p.idProductoPrincipal === this.subProducto.idProductoPrincipal
   ) ?? null;
 }
 resetFormularioVariante() {
+  this.cargarProductos();
   this.pasoActual = 1;
  this.mostrarFormProducto = true;
   this.subProducto = {
@@ -708,6 +726,7 @@ onSubmit(form: any) {
         console.log(this.producto)
         this.productoService.addProducto(this.producto).subscribe({
           next: (resp) => {
+             this.cargarProductosVariante();
             this.cargarProductos();
             // 🔹 Reset form y variables
             form.reset();
