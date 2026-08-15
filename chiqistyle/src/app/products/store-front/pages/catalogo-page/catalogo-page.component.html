@@ -97,7 +97,11 @@
 
           <!-- flex gap-2 + btn = coloca los botones con separación uniforme y mantiene la acción principal clara. -->
           <div class="flex gap-2 pt-1">
-            <button class="btn flex-1 border-pink-200 bg-white text-pink-600 hover:bg-pink-50 hover:border-pink-300">
+            <button
+              type="button"
+              [routerLink]="['/producto', producto.id]"
+              class="btn flex-1 border-pink-200 bg-white text-pink-600 hover:bg-pink-50 hover:border-pink-300"
+            >
               Ver más
             </button>
             <button class="btn flex-1 border-0 bg-pink-500 text-white hover:bg-pink-600">
