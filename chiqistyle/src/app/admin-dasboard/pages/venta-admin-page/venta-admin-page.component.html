@@ -227,31 +227,37 @@ class="mt-1 block w-full px-3 py-2 border rounded-md font-semibold text-red-600"
     <section class="space-y-4">
         <h3 class="text-xl font-semibold text-gray-700">Productos Pendientes de Venta</h3>
 
-        <div class="overflow-x-auto rounded-lg border border-gray-300 shadow-lg">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">PRODUCTO/VARIANTE</th>
-                        <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">UBICACIÓN</th>
-                        <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">CANTIDAD</th>
-                        <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">PRECIO U.</th>
-                        <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">SUBTOTAL</th>
-                        <th class="px-4 py-2 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">ACCIONES</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    <tr *ngFor="let venta of VentaList; let i = index" class="hover:bg-red-50/50 transition-colors">
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{venta.SubProducto}}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{venta.almacen}}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">{{venta.cantidad}}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">S/.{{venta.precioUnitario}}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-right text-red-700">S/.{{venta.cantidad * venta.precioUnitario}}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
-                            <button (click)="eliminarDetalle(i)" class="text-red-600 hover:text-red-900 font-semibold transition-colors text-xs">Quitar</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="relative overflow-hidden rounded-lg border border-gray-300 shadow-lg">
+            <div class="absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-white to-transparent sm:hidden"></div>
+            <div class="border-b border-blue-100 bg-gradient-to-r from-blue-50 via-white to-blue-50 px-3 py-2 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-600 sm:hidden">
+                ← Desliza para ver más →
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">PRODUCTO/VARIANTE</th>
+                            <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">UBICACIÓN</th>
+                            <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">CANTIDAD</th>
+                            <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">PRECIO U.</th>
+                            <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">SUBTOTAL</th>
+                            <th class="px-4 py-2 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr *ngFor="let venta of VentaList; let i = index" class="hover:bg-red-50/50 transition-colors">
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{venta.SubProducto}}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{venta.almacen}}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">{{venta.cantidad}}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">S/.{{venta.precioUnitario}}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-right text-red-700">S/.{{venta.cantidad * venta.precioUnitario}}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
+                                <button (click)="eliminarDetalle(i)" class="text-red-600 hover:text-red-900 font-semibold transition-colors text-xs">Quitar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 
