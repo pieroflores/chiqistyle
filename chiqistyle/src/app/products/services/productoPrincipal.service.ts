@@ -42,6 +42,10 @@ export class productoService {
           return this.http.get<ProductoPrincipal[]>(`${this.apiUrl}`)
           .pipe(tap((resp) => console.log(resp)));
         }
+        getProductoVariante():Observable<ProductoPrincipal[]>{
+          return this.http.get<ProductoPrincipal[]>(`${this.apiUrl}variante`)
+          .pipe(tap((resp) => console.log(resp)));
+        }
 
          getColor(): Observable<Color[]>{
           return this.http.get<Color[]>(`${environment.apiUrl}/color`)
