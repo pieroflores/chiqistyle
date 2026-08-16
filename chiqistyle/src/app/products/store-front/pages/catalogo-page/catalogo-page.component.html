@@ -43,8 +43,15 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <button *ngFor="let categoria of categorias"
-                  class="btn btn-sm rounded-full border border-pink-200 bg-white px-4 text-sm font-medium text-pink-600 hover:bg-pink-50 hover:border-pink-300">
+          <button
+            *ngFor="let categoria of categorias"
+            type="button"
+            (click)="seleccionarCategoria(categoria)"
+            [class.btn-primary]="categoriaSeleccionada === categoria"
+            [class.border-pink-200]="categoriaSeleccionada !== categoria"
+            [class.bg-white]="categoriaSeleccionada !== categoria"
+            [class.text-pink-600]="categoriaSeleccionada !== categoria"
+            class="btn btn-sm rounded-full px-4 text-sm font-medium hover:border-pink-300 hover:bg-pink-50">
             {{ categoria }}
           </button>
         </div>
@@ -57,12 +64,12 @@
         </div>
 
         <span class="badge badge-soft bg-pink-100 text-pink-700 border-pink-200 px-3 py-3 text-sm font-medium">
-          {{ productos.length }} productos
+          {{ productosFiltrados.length }} productos
         </span>
       </div>
 
       <section class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        <article *ngFor="let producto of productos" class="group overflow-hidden rounded-[28px] border border-pink-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <article *ngFor="let producto of productosFiltrados" class="group overflow-hidden rounded-[28px] border border-pink-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
           <div class="relative overflow-hidden">
             <img
               [src]="getFotoUrl(producto.fotoProducto)"
@@ -88,9 +95,9 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <span class="text-xl font-black text-pink-600">${{ getPrecioMostrado(producto) | number:'1.0-0' }}</span>
+              <span class="text-xl font-black text-pink-600">S/.{{ getPrecioMostrado(producto) | number:'1.0-0' }}</span>
               <span *ngIf="getPrecioTachado(producto) > 0" class="text-sm text-slate-400 line-through">
-                ${{ getPrecioTachado(producto) | number:'1.0-0' }}
+                S/.{{ getPrecioTachado(producto) | number:'1.0-0' }}
               </span>
             </div>
 

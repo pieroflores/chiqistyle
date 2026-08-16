@@ -20,6 +20,7 @@ export class CatalogoPageComponent implements OnInit {
 
   productos: ProductoCatalogo[] = [];
   categorias: string[] = ['Todos'];
+  categoriaSeleccionada = 'Todos';
   cargando = false;
 
   constructor(private readonly catalogoService: CatalogoService) {}
@@ -31,14 +32,28 @@ export class CatalogoPageComponent implements OnInit {
       next: (respuesta) => {
         this.productos = respuesta ?? [];
         this.categorias = ['Todos', ...Array.from(new Set(this.productos.map((producto) => producto.categoria).filter(Boolean)))];
+        this.categoriaSeleccionada = 'Todos';
         this.cargando = false;
       },
       error: () => {
         this.productos = [];
         this.categorias = ['Todos'];
+        this.categoriaSeleccionada = 'Todos';
         this.cargando = false;
       },
     });
+  }
+
+  get productosFiltrados(): ProductoCatalogo[] {
+    if (this.categoriaSeleccionada === 'Todos') {
+      return this.productos;
+    }
+
+    return this.productos.filter((producto) => producto.categoria === this.categoriaSeleccionada);
+  }
+
+  seleccionarCategoria(categoria: string): void {
+    this.categoriaSeleccionada = categoria;
   }
 
   getFotoUrl(path?: string): string {
