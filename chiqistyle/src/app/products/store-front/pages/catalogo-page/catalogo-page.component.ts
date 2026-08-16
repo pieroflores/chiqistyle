@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { PRODUCTOS_CATALOGO, type ProductoCatalogo } from '../../data/productos.mock';
+import { environment } from '../../../../../environments/environment';
+import type { ProductoCatalogo } from '../../interfaces/catalogo.interface';
+import { CatalogoService } from '../../services/catalogo.service';
 
 @Component({
   selector: 'app-catalogo-page',
@@ -9,16 +11,55 @@ import { PRODUCTOS_CATALOGO, type ProductoCatalogo } from '../../data/productos.
   imports: [CommonModule, RouterModule],
   templateUrl: './catalogo-page.component.html',
 })
-export class CatalogoPageComponent {
+export class CatalogoPageComponent implements OnInit {
   readonly departamentos = [
     { nombre: 'Niña', activo: true },
     { nombre: 'Niño', activo: false, proximamente: true },
     { nombre: 'Mujer', activo: false, proximamente: true }
   ];
 
-  readonly categorias = ['Todos', 'Cartera', 'Conjunto 2 piezas', 'Conjunto 3 piezas', 'Prenda única'];
+  productos: ProductoCatalogo[] = [];
+  categorias: string[] = ['Todos'];
+  cargando = false;
 
-  readonly productos: ProductoCatalogo[] = PRODUCTOS_CATALOGO;
+  constructor(private readonly catalogoService: CatalogoService) {}
+
+  ngOnInit(): void {
+    this.cargando = true;
+
+    this.catalogoService.obtenerCatalogo().subscribe({
+      next: (respuesta) => {
+        this.productos = respuesta ?? [];
+        this.categorias = ['Todos', ...Array.from(new Set(this.productos.map((producto) => producto.categoria).filter(Boolean)))];
+        this.cargando = false;
+      },
+      error: () => {
+        this.productos = [];
+        this.categorias = ['Todos'];
+        this.cargando = false;
+      },
+    });
+  }
+
+  getFotoUrl(path?: string): string {
+    return path ? `${environment.assetsUrl}${path}` : '';
+  }
+
+  getPrecioMostrado(producto: ProductoCatalogo): number {
+    return producto.precioVentaLiquidacion < producto.precioVenta ? producto.precioVentaLiquidacion : producto.precioVenta;
+  }
+
+  getPrecioTachado(producto: ProductoCatalogo): number {
+    return producto.precioVentaLiquidacion < producto.precioVenta ? producto.precioVenta : 0;
+  }
+
+  esLiquidacion(producto: ProductoCatalogo): boolean {
+    return producto.precioVentaLiquidacion < producto.precioVenta;
+  }
+
+  getEtiqueta(producto: ProductoCatalogo): string {
+    return this.esLiquidacion(producto) ? 'Liquidación' : '';
+  }
 
   abrirWhatsAppGeneral(): void {
     const mensaje = 'Hola! Quiero consultar sobre productos de Chiqistyle.';
@@ -27,7 +68,8 @@ export class CatalogoPageComponent {
   }
 
   abrirWhatsAppProducto(producto: ProductoCatalogo): void {
-    const mensaje = `Hola! Quiero consultar por: ${producto.nombreProducto} - Precio: $${producto.precio.toLocaleString('en-US')}`;
+    const precio = this.getPrecioMostrado(producto);
+    const mensaje = `Hola! Quiero consultar por: ${producto.nombreProducto} - Precio: $${precio.toLocaleString('en-US')}`;
     const url = `https://wa.me/51918386236?text=${encodeURIComponent(mensaje)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   }
@@ -35,17 +77,13 @@ export class CatalogoPageComponent {
   getBadgeClasses(etiqueta?: string): string {
     const base = 'inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em]';
 
+    if (!etiqueta) {
+      return `${base} border-transparent bg-transparent text-transparent`;
+    }
+
     switch (etiqueta) {
       case 'Liquidación':
         return `${base} border-pink-200 bg-pink-100 text-pink-700`;
-      case 'Oferta':
-        return `${base} border-rose-200 bg-rose-100 text-rose-700`;
-      case 'Hot':
-        return `${base} border-orange-200 bg-orange-100 text-orange-700`;
-      case 'Nuevo':
-        return `${base} border-violet-200 bg-violet-100 text-violet-700`;
-      case 'Sale':
-        return `${base} border-amber-200 bg-amber-100 text-amber-700`;
       default:
         return `${base} border-pink-200 bg-pink-100 text-pink-700`;
     }

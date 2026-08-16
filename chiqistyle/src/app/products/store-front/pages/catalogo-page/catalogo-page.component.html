@@ -1,5 +1,4 @@
 <div class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50 text-slate-800">
-  <!-- flex + justify-between = alinea el logo y el botón del carrito en la misma fila. -->
   <header class="sticky top-0 z-20 border-b border-pink-100 bg-white/80 backdrop-blur-md">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-3">
@@ -22,106 +21,105 @@
     </div>
   </header>
 
-  <!-- mx-auto max-w-7xl = centra el contenido y limita el ancho para que la tienda se vea ordenada en desktop. -->
   <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-    <!-- flex + gap + md:flex-row = organiza primero el selector de departamento y luego el bloque de categorías, con una disposición adaptable. -->
-    <div class="mb-8 flex flex-col gap-4">
-      <div class="flex flex-wrap items-center gap-2">
-        <button *ngFor="let departamento of departamentos"
-                [class.btn-primary]="departamento.activo"
-                [class.btn-disabled]="departamento.proximamente"
-                [class.border-pink-200]="!departamento.activo && !departamento.proximamente"
-                [class.bg-white]="!departamento.activo && !departamento.proximamente"
-                [class.text-pink-600]="!departamento.activo && !departamento.proximamente"
-                class="btn btn-sm rounded-full px-4 font-medium"
-                [disabled]="departamento.proximamente">
-          {{ departamento.nombre }}
-          <span *ngIf="departamento.proximamente" class="ml-1 text-[10px]">Próximamente</span>
-        </button>
-      </div>
-
-      <!-- flex-wrap + gap-2 = crea un selector visual de categorías con botones tipo chips, sin funcionalidad real por ahora. -->
-      <div class="flex flex-wrap items-center gap-2">
-        <button *ngFor="let categoria of categorias"
-                class="btn btn-sm rounded-full border border-pink-200 bg-white px-4 text-sm font-medium text-pink-600 hover:bg-pink-50 hover:border-pink-300">
-          {{ categoria }}
-        </button>
-      </div>
+    <div *ngIf="cargando" class="flex min-h-[200px] items-center justify-center text-pink-600 font-semibold">
+      Cargando catálogo...
     </div>
 
-    <!-- flex + justify-between = coloca el título y el contador de productos en una misma línea. -->
-    <div class="mb-6 flex items-end justify-between gap-3">
-      <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-pink-500">Colección</p>
-        <h1 class="mt-2 text-3xl font-black text-slate-800 sm:text-4xl">Catálogo</h1>
-      </div>
-
-      <span class="badge badge-soft bg-pink-100 text-pink-700 border-pink-200 px-3 py-3 text-sm font-medium">
-        {{ productos.length }} productos
-      </span>
-    </div>
-
-    <!-- gap-6 + sm:grid-cols-2 + xl:grid-cols-4 = organiza los productos en 2 columnas en móvil y hasta 4 en desktop. -->
-    <section class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      <!-- rounded-[28px] + shadow-sm + hover:shadow-lg = da forma a cada tarjeta y la eleva al pasar el mouse. -->
-      <article *ngFor="let producto of productos" class="group overflow-hidden rounded-[28px] border border-pink-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-        <div class="relative overflow-hidden">
-          <img
-            [src]="producto.fotoProducto"
-            [alt]="producto.nombreProducto"
-            class="h-72 w-full object-cover transition duration-500 group-hover:scale-105"
-          />
-
-          <span *ngIf="producto.esLiquidacion"
-                [ngClass]="getBadgeClasses(producto.etiqueta)"
-                class="absolute left-3 top-3 shadow-sm">
-            {{ producto.etiqueta || 'Liquidación' }}
-          </span>
+    <ng-container *ngIf="!cargando">
+      <div class="mb-8 flex flex-col gap-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <button *ngFor="let departamento of departamentos"
+                  [class.btn-primary]="departamento.activo"
+                  [class.btn-disabled]="departamento.proximamente"
+                  [class.border-pink-200]="!departamento.activo && !departamento.proximamente"
+                  [class.bg-white]="!departamento.activo && !departamento.proximamente"
+                  [class.text-pink-600]="!departamento.activo && !departamento.proximamente"
+                  class="btn btn-sm rounded-full px-4 font-medium"
+                  [disabled]="departamento.proximamente">
+            {{ departamento.nombre }}
+            <span *ngIf="departamento.proximamente" class="ml-1 text-[10px]">Próximamente</span>
+          </button>
         </div>
 
-        <div class="space-y-4 p-4">
-          <div class="space-y-2">
-            <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-pink-500">
-              {{ producto.categoria }}
-            </p>
-            <h2 class="text-lg font-bold text-slate-800">
-              {{ producto.nombreProducto }}
-            </h2>
-          </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button *ngFor="let categoria of categorias"
+                  class="btn btn-sm rounded-full border border-pink-200 bg-white px-4 text-sm font-medium text-pink-600 hover:bg-pink-50 hover:border-pink-300">
+            {{ categoria }}
+          </button>
+        </div>
+      </div>
 
-          <div class="flex items-center gap-2">
-            <span class="text-xl font-black text-pink-600">${{ producto.precio | number:'1.0-0' }}</span>
-            <span *ngIf="producto.precioOriginal" class="text-sm text-slate-400 line-through">
-              ${{ producto.precioOriginal | number:'1.0-0' }}
+      <div class="mb-6 flex items-end justify-between gap-3">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-pink-500">Colección</p>
+          <h1 class="mt-2 text-3xl font-black text-slate-800 sm:text-4xl">Catálogo</h1>
+        </div>
+
+        <span class="badge badge-soft bg-pink-100 text-pink-700 border-pink-200 px-3 py-3 text-sm font-medium">
+          {{ productos.length }} productos
+        </span>
+      </div>
+
+      <section class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <article *ngFor="let producto of productos" class="group overflow-hidden rounded-[28px] border border-pink-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+          <div class="relative overflow-hidden">
+            <img
+              [src]="getFotoUrl(producto.fotoProducto)"
+              [alt]="producto.nombreProducto"
+              class="h-72 w-full object-cover transition duration-500 group-hover:scale-105"
+            />
+
+            <span *ngIf="esLiquidacion(producto)"
+                  [ngClass]="getBadgeClasses(getEtiqueta(producto))"
+                  class="absolute left-3 top-3 shadow-sm">
+              {{ getEtiqueta(producto) }}
             </span>
           </div>
 
-          <p class="text-sm leading-6 text-slate-500">
-            {{ producto.descripcion }}
-          </p>
+          <div class="space-y-4 p-4">
+            <div class="space-y-2">
+              <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-pink-500">
+                {{ producto.categoria }}
+              </p>
+              <h2 class="text-lg font-bold text-slate-800">
+                {{ producto.nombreProducto }}
+              </h2>
+            </div>
 
-          <!-- flex gap-2 + btn = coloca los botones con separación uniforme y mantiene la acción principal clara. -->
-          <div class="flex gap-2 pt-1">
-            <button
-              type="button"
-              [routerLink]="['/producto', producto.id]"
-              class="btn flex-1 border-pink-200 bg-white text-pink-600 hover:bg-pink-50 hover:border-pink-300"
-            >
-              Ver más
-            </button>
-            <button
-              type="button"
-              (click)="abrirWhatsAppProducto(producto)"
-              class="btn flex-1 border-0 bg-pink-500 text-white hover:bg-pink-600"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75A2.25 2.25 0 0 1 6 4.5h12a2.25 2.25 0 0 1 2.25 2.25v10.5A2.25 2.25 0 0 1 18 19.5H6a2.25 2.25 0 0 1-2.25-2.25V6.75Zm0 0 8.25 6.75 8.25-6.75" />
-              </svg>
-              Agregar
-            </button>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-black text-pink-600">${{ getPrecioMostrado(producto) | number:'1.0-0' }}</span>
+              <span *ngIf="getPrecioTachado(producto) > 0" class="text-sm text-slate-400 line-through">
+                ${{ getPrecioTachado(producto) | number:'1.0-0' }}
+              </span>
+            </div>
+
+            <p class="text-sm leading-6 text-slate-500">
+              {{ producto.variantes?.length ?? 0 }} variantes disponibles
+            </p>
+
+            <div class="flex gap-2 pt-1">
+              <button
+                type="button"
+                [routerLink]="['/producto', producto.idProductoPrincipal]"
+                class="btn flex-1 border-pink-200 bg-white text-pink-600 hover:bg-pink-50 hover:border-pink-300"
+              >
+                Ver más
+              </button>
+              <button
+                type="button"
+                (click)="abrirWhatsAppProducto(producto)"
+                class="btn flex-1 border-0 bg-pink-500 text-white hover:bg-pink-600"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75A2.25 2.25 0 0 1 6 4.5h12a2.25 2.25 0 0 1 2.25 2.25v10.5A2.25 2.25 0 0 1 18 19.5H6a2.25 2.25 0 0 1-2.25-2.25V6.75Zm0 0 8.25 6.75 8.25-6.75" />
+                </svg>
+                Agregar
+              </button>
+            </div>
           </div>
-        </div>
-      </article>
-    </section>
+        </article>
+      </section>
+    </ng-container>
   </main>
 </div>

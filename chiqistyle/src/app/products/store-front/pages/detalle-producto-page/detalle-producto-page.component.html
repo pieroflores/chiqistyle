@@ -1,5 +1,4 @@
 <div class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50 text-slate-800">
-  <!-- header = mantiene la identidad visual de la tienda con la misma paleta rosa/fucsia. -->
   <header class="sticky top-0 z-20 border-b border-pink-100 bg-white/80 backdrop-blur-md">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
       <button
@@ -20,12 +19,11 @@
     </div>
   </header>
 
-  <main *ngIf="producto as p" class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-    <!-- grid + gap-8 = en móvil se apila verticalmente; en desktop la imagen queda a la izquierda y la información a la derecha. -->
+  <main *ngIf="producto as p; else cargandoTpl" class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
     <section class="grid gap-8 lg:grid-cols-2 lg:items-start">
       <div class="overflow-hidden rounded-[32px] border border-pink-100 bg-white p-3 shadow-sm sm:p-4">
         <img
-          [src]="p.fotoProducto"
+          [src]="getFotoUrl(p.fotoProducto)"
           [alt]="p.nombreProducto"
           class="h-[420px] w-full rounded-[24px] object-cover sm:h-[560px] lg:h-[680px]"
         />
@@ -42,11 +40,10 @@
           </h1>
         </div>
 
-        <!-- flex + items-center + gap-3 = alinea precio actual y precio tachado con consistencia visual. -->
         <div class="flex items-center gap-3">
-          <span class="text-3xl font-black text-pink-600">${{ p.precio | number:'1.0-0' }}</span>
-          <span *ngIf="p.precioOriginal" class="text-lg text-slate-400 line-through">
-            ${{ p.precioOriginal | number:'1.0-0' }}
+          <span class="text-3xl font-black text-pink-600">${{ getPrecioMostrado(p) | number:'1.0-0' }}</span>
+          <span *ngIf="getPrecioTachado(p) > 0" class="text-lg text-slate-400 line-through">
+            ${{ getPrecioTachado(p) | number:'1.0-0' }}
           </span>
         </div>
 
@@ -58,7 +55,7 @@
 
           <div class="flex flex-wrap gap-2">
             <button
-              *ngFor="let talla of p.tallas"
+              *ngFor="let talla of getTallasProducto()"
               type="button"
               (click)="tallaSeleccionada = talla"
               [class.border-pink-500]="tallaSeleccionada === talla"
@@ -81,7 +78,7 @@
 
           <div class="flex flex-wrap gap-3">
             <button
-              *ngFor="let color of p.colores"
+              *ngFor="let color of getColoresProducto()"
               type="button"
               (click)="colorSeleccionado = color"
               [attr.aria-label]="color.nombre"
@@ -127,10 +124,16 @@
         <div class="rounded-[24px] border border-pink-100 bg-white p-4 shadow-sm">
           <p class="mb-2 text-sm font-bold uppercase tracking-[0.16em] text-slate-600">Descripción</p>
           <p class="text-base leading-7 text-slate-600">
-            {{ p.descripcion }}
+            {{ p.variantes?.length ?? 0 }} variantes disponibles
           </p>
         </div>
       </div>
     </section>
   </main>
+
+  <ng-template #cargandoTpl>
+    <div class="flex min-h-[200px] items-center justify-center text-pink-600 font-semibold">
+      Cargando producto...
+    </div>
+  </ng-template>
 </div>
