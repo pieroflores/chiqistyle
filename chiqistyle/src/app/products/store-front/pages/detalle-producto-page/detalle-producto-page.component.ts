@@ -14,6 +14,7 @@ export class DetalleProductoPageComponent implements OnInit {
   cantidad = 1;
   tallaSeleccionada = '';
   colorSeleccionado: { nombre: string; hex: string } | null = null;
+  readonly whatsappNumero = '51918386236';
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -42,12 +43,20 @@ export class DetalleProductoPageComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  agregarAlCarrito(): void {
-    console.log('Agregar al carrito', {
-      producto: this.producto?.nombreProducto,
-      talla: this.tallaSeleccionada,
-      color: this.colorSeleccionado?.nombre,
-      cantidad: this.cantidad,
-    });
+  private formatearPrecio(precio: number): string {
+    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(precio);
+  }
+
+  consultarPorWhatsApp(): void {
+    if (!this.producto) {
+      return;
+    }
+
+    const talla = this.tallaSeleccionada || 'No especificada';
+    const color = this.colorSeleccionado?.nombre || 'No especificado';
+    const mensaje = `Hola! Quiero consultar por: ${this.producto.nombreProducto} - Talla ${talla} - Color ${color} - Cantidad: ${this.cantidad} - Precio: $${this.formatearPrecio(this.producto.precio)}`;
+    const url = `https://wa.me/${this.whatsappNumero}?text=${encodeURIComponent(mensaje)}`;
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
