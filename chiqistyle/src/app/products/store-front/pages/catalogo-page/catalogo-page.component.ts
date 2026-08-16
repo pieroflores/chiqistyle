@@ -18,7 +18,19 @@ export class CatalogoPageComponent {
 
   readonly categorias = ['Todos', 'Cartera', 'Conjunto 2 piezas', 'Conjunto 3 piezas', 'Prenda única'];
 
- readonly productos: ProductoCatalogo[] = PRODUCTOS_CATALOGO;
+  readonly productos: ProductoCatalogo[] = PRODUCTOS_CATALOGO;
+
+  abrirWhatsAppGeneral(): void {
+    const mensaje = 'Hola! Quiero consultar sobre productos de Chiqistyle.';
+    const url = `https://wa.me/51918386236?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  abrirWhatsAppProducto(producto: ProductoCatalogo): void {
+    const mensaje = `Hola! Quiero consultar por: ${producto.nombreProducto} - Precio: $${producto.precio.toLocaleString('en-US')}`;
+    const url = `https://wa.me/51918386236?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
 
   getBadgeClasses(etiqueta?: string): string {
     const base = 'inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em]';
