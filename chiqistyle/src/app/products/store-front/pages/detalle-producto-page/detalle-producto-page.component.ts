@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import type { ProductoCatalogo } from '../../interfaces/catalogo.interface';
 import { CatalogoService } from '../../services/catalogo.service';
+import { getColorBorderClass as getColorBorderClassUtil, getColorHex } from '../../utils/colores.util';
 
 @Component({
   selector: 'app-detalle-producto-page',
@@ -36,7 +37,7 @@ export class DetalleProductoPageComponent implements OnInit {
         if (this.producto) {
           const primeraVariante = this.producto.variantes?.[0];
           this.tallaSeleccionada = primeraVariante?.talla ?? '';
-          this.colorSeleccionado = primeraVariante?.color ? { nombre: primeraVariante.color, hex: '#f9a8d4' } : null;
+          this.colorSeleccionado = primeraVariante?.color ? { nombre: primeraVariante.color, hex: getColorHex(primeraVariante.color) } : null;
         }
 
         this.cargando = false;
@@ -59,10 +60,14 @@ export class DetalleProductoPageComponent implements OnInit {
   getColoresProducto(): Array<{ nombre: string; hex: string }> {
     const colores = (this.producto?.variantes ?? []).map((variante) => ({
       nombre: variante.color,
-      hex: variante.color?.toLowerCase() === 'rosa' ? '#f9a8d4' : '#f5d0fe',
+      hex: getColorHex(variante.color),
     }));
 
     return Array.from(new Map(colores.map((color) => [color.nombre, color])).values());
+  }
+
+  getColorBorderClass(colorNombre?: string): string {
+    return getColorBorderClassUtil(colorNombre);
   }
 
   getPrecioMostrado(producto: ProductoCatalogo): number {

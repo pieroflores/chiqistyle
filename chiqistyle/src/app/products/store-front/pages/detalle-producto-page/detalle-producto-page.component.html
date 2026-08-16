@@ -85,6 +85,7 @@
               [title]="color.nombre"
               [class.ring-2]="colorSeleccionado?.nombre === color.nombre"
               [class.ring-pink-300]="colorSeleccionado?.nombre === color.nombre"
+              [ngClass]="getColorBorderClass(color.nombre)"
               class="h-10 w-10 rounded-full border-2 border-white shadow-sm transition hover:scale-105"
               [style.background-color]="color.hex"
             ></button>
