@@ -397,16 +397,47 @@ class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-5
 
     <h3 class="text-lg font-bold mb-4">Registrar Cliente</h3>
 <div class="mb-3">
-      <label>DNI</label>
-      <input [(ngModel)]="nuevoCliente.dni"  (blur)="buscarDniRapido()"
-             maxlength="8"
-             class="w-full border px-3 py-2 rounded mt-1">
+      <!-- <label>DNI</label> -->
+      <!-- TIPO DE DOCUMENTO -->
+<div class="mb-3">
+  <label>Tipo de documento</label>
+
+  <select
+    [(ngModel)]="nuevoCliente.tipoDocumento"
+    (change)="cambioTipoDocumento()"
+    class="w-full border px-3 py-2 rounded mt-1">
+
+    <option value="DNI">DNI</option>
+    <option value="CE">Carnet de Extranjería</option>
+
+  </select>
+</div>
+     <div class="mb-3">
+
+  <label>
+    {{ nuevoCliente.tipoDocumento === 'DNI'
+        ? 'DNI'
+        : 'Carnet de Extranjería' }}
+  </label>
+
+  <input
+    [(ngModel)]="nuevoCliente.dni"
+    (blur)="buscarDniRapido()"
+    [maxlength]="nuevoCliente.tipoDocumento === 'DNI' ? 8 : 12"
+    [placeholder]="nuevoCliente.tipoDocumento === 'DNI'
+      ? 'Ingrese DNI'
+      : 'Ingrese Carnet de Extranjería'"
+    class="w-full border px-3 py-2 rounded mt-1">
+
+</div>
     </div>
 
     <div class="mb-3">
       <label>Nombre</label>
-      <input [(ngModel)]="nuevoCliente.nombreCliente"
-             class="w-full border px-3 py-2 rounded mt-1">
+      <input
+    [(ngModel)]="nuevoCliente.nombreCliente"
+    [readonly]="nuevoCliente.tipoDocumento === 'DNI'"
+    class="w-full border px-3 py-2 rounded mt-1">
     </div>
 
 

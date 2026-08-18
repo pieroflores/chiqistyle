@@ -61,6 +61,7 @@ public precioVentaLiquidacion: number= 0;
 mostrarModalCliente = false;
 
 nuevoCliente: any = {
+   tipoDocumento: 'DNI',
   nombreCliente: '',
   dni: '',
   telefono: '',
@@ -459,6 +460,14 @@ Promise.all(uploads).then((results:any) => {
   }
 
   } */
+
+cambioTipoDocumento() {
+
+  this.nuevoCliente.dni = '';
+  this.nuevoCliente.nombreCliente = '';
+
+}
+
 agregarVenta() {
     if (!this.VentaList.length) {
       Swal.fire('Atención', 'No hay productos en el pedido', 'warning');
@@ -824,6 +833,10 @@ guardarClienteRapido() {
 }
 buscarDniRapido() {
 
+  if (this.nuevoCliente.tipoDocumento === 'CE') {
+    return;
+  }
+
   if (!this.nuevoCliente.dni) return;
   const existe = this.clientes.find(c => c.dni === this.nuevoCliente.dni);
    if (existe) {
@@ -870,6 +883,7 @@ buscarDniRapido() {
 abrirNuevoCliente() {
 
   this.nuevoCliente = {
+    tipoDocumento: 'DNI',
     nombreCliente: '',
     dni: '',
     telefono: '',
@@ -883,6 +897,7 @@ cerrarModalCliente() {
   this.mostrarModalCliente = false;
 
   this.nuevoCliente = {
+     tipoDocumento: 'DNI',
     nombreCliente: '',
     dni: '',
     telefono: '',
